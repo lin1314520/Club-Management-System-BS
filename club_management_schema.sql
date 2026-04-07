@@ -126,14 +126,16 @@ CREATE TABLE `activity_info` (
 -- 9. 活动参与(报名)表
 DROP TABLE IF EXISTS `activity_participant`;
 CREATE TABLE `activity_participant` (
-  `participant_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '活动参与id',
-  `activity_id` bigint(20) NOT NULL COMMENT '活动ID',
-  `user_id` bigint(20) NOT NULL COMMENT '参与用户ID',
-  `audit_status` tinyint(1) DEFAULT '0' COMMENT '审核状态：0-待审核，1-已通过，2-已拒绝',
-  `apply_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '报名时间',
-  PRIMARY KEY (`participant_id`),
-  KEY `idx_activity_id` (`activity_id`),
-  KEY `idx_user_id` (`user_id`)
+ `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+ `activity_id` bigint(20) NOT NULL COMMENT '活动ID',
+ `user_id` bigint(20) NOT NULL COMMENT '参与用户ID',
+ `audit_status` tinyint(1) DEFAULT '0' COMMENT '审核状态：0-待审核，1-已通过，2-已拒绝',
+ `sign_in_time` datetime DEFAULT NULL COMMENT '签到时间',
+ `sign_out_time` datetime DEFAULT NULL COMMENT '签退时间',
+ `apply_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '报名时间',
+ PRIMARY KEY (`id`),
+ KEY `idx_activity_id` (`activity_id`),
+ KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动参与';
 
 -- 10. 活动签到表
