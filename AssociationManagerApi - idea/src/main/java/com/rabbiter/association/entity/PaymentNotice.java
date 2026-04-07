@@ -21,7 +21,7 @@ public class PaymentNotice implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "notice_id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

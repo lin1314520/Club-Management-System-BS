@@ -20,7 +20,7 @@ public class ClubApplication implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "application_id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**

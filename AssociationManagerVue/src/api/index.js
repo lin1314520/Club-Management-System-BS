@@ -231,9 +231,6 @@ export function getPageWithdrawalRecords(pageIndex, pageSize, clubId, status) {
 export function addWithdrawalRecord(params) {
 	return http.post('/withdrawalRecord/add', params);
 }
-export function auditWithdrawalRecord(id, status) {
-	return http.post('/withdrawalRecord/audit', { id, status });
-}
 export function delWithdrawalRecord(id) {
 	return http.post('/withdrawalRecord/del', { id });
 }

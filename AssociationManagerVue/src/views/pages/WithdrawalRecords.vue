@@ -8,9 +8,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-select v-model="qryForm.status" placeholder="选择状态" clearable>
-                            <el-option label="审批中" :value="0"></el-option>
-                            <el-option label="已通过" :value="1"></el-option>
-                            <el-option label="已拒绝" :value="2"></el-option>
+                            <el-option label="已完成" :value="1"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
@@ -29,32 +27,18 @@
                     <el-table-column align="center" prop="reason" label="提现事由"></el-table-column>
                     <el-table-column align="center" label="状态">
                         <template slot-scope="scope">
-                            <el-tag v-if="scope.row.status === 0" type="info">审批中</el-tag>
-                            <el-tag v-if="scope.row.status === 1" type="success">已通过</el-tag>
-                            <el-tag v-if="scope.row.status === 2" type="danger">已拒绝</el-tag>
+                            <el-tag v-if="scope.row.status === 1" type="success">已完成</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column align="center" label="申请时间">
+                    <el-table-column align="center" label="提现时间">
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.applyTime) }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column align="center" label="审批时间">
-                        <template slot-scope="scope">
-                            {{ formatDate(scope.row.auditTime) }}
                         </template>
                     </el-table-column>
                     
                     <el-table-column v-if="userType == 0 || userType == 1" align="center" label="操作处理" width="160" fixed="right">
                         <template slot-scope="scope">
-                            <template v-if="userType == 0 && scope.row.status === 0">
-                                <el-button type="success" size="mini" @click="auditInfo(scope.row.id, 1)">通过</el-button>
-                                <el-button type="danger" size="mini" @click="auditInfo(scope.row.id, 2)">拒绝</el-button>
-                            </template>
-                            <template v-if="userType == 1 && scope.row.status === 0">
-                                <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">撤销</el-button>
-                            </template>
-                            <template v-if="userType == 0 && scope.row.status !== 0">
+                            <template v-if="userType == 0 || userType == 1">
                                 <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">删除</el-button>
                             </template>
                         </template>
@@ -67,7 +51,7 @@
             </div>
         </el-card>
 
-        <el-dialog title="发起提现申请" width="600px" :visible.sync="showAddFlag">
+        <el-dialog title="发起提现" width="600px" :visible.sync="showAddFlag">
             <el-form label-width="90px" :model="wrForm">
                 <el-form-item label="所属社团">
                     <el-select style="width: 100%" v-model="wrForm.clubId" placeholder="请选择您的社团">
@@ -90,7 +74,7 @@
 </template>
 
 <script>
-import { getLoginUser, getPageWithdrawalRecords, addWithdrawalRecord, auditWithdrawalRecord, delWithdrawalRecord, getAllTeamList } from "../../api";
+import { getLoginUser, getPageWithdrawalRecords, addWithdrawalRecord, delWithdrawalRecord, getAllTeamList } from "../../api";
 
 export default {
     data() {
@@ -165,17 +149,8 @@ export default {
                 this.showAddFlag = false;
             });
         },
-        auditInfo(id, status) {
-            const action = status === 1 ? "通过" : "拒绝";
-            this.$confirm(`确定要${action}该提现申请吗?`, "提示", { type: "warning" }).then(() => {
-                auditWithdrawalRecord(id, status).then(resp => {
-                    this.$message.success(resp.msg);
-                    this.getPageInfo(this.pageIndex, this.pageSize);
-                });
-            });
-        },
         delInfo(id) {
-            this.$confirm("确定要删除该提现申请记录吗?", "提示", { type: "warning" }).then(() => {
+            this.$confirm("确定要删除该提现记录吗?", "提示", { type: "warning" }).then(() => {
                 delWithdrawalRecord(id).then(resp => {
                     this.$message.success(resp.msg);
                     this.getPageInfo(this.pageIndex, this.pageSize);

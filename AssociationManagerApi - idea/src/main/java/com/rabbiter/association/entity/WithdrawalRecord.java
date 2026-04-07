@@ -21,7 +21,7 @@ public class WithdrawalRecord implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "record_id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -59,12 +59,6 @@ public class WithdrawalRecord implements Serializable {
      */
     @TableField(value = "apply_time")
     private Date applyTime;
-
-    /**
-     * 审批时间
-     */
-    @TableField(value = "audit_time")
-    private Date auditTime;
 
     public Long getId() {
         return id;
@@ -120,13 +114,5 @@ public class WithdrawalRecord implements Serializable {
 
     public void setApplyTime(Date applyTime) {
         this.applyTime = applyTime;
-    }
-
-    public Date getAuditTime() {
-        return auditTime;
-    }
-
-    public void setAuditTime(Date auditTime) {
-        this.auditTime = auditTime;
     }
 }

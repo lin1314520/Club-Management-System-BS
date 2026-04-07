@@ -3,14 +3,15 @@ package com.rabbiter.association.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.rabbiter.association.entity.ClubInfo;
+import com.rabbiter.association.entity.SysPresident;
 import com.rabbiter.association.entity.SysUser;
 import com.rabbiter.association.entity.WithdrawalRecord;
 import com.rabbiter.association.msg.PageData;
 import com.rabbiter.association.msg.R;
 import com.rabbiter.association.service.ClubInfoService;
+import com.rabbiter.association.service.SysPresidentService;
 import com.rabbiter.association.service.SysUserService;
 import com.rabbiter.association.service.WithdrawalRecordService;
-import com.rabbiter.association.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,9 @@ public class WithdrawalRecordController extends BaseController {
     @Autowired
     private SysUserService sysUserService;
 
+    @Autowired
+    private SysPresidentService sysPresidentService;
+
     @GetMapping("/page")
     public R getPageInfos(Long pageIndex, Long pageSize, Long clubId, Integer status) {
         QueryWrapper<WithdrawalRecord> qw = new QueryWrapper<>();
@@ -51,14 +55,18 @@ public class WithdrawalRecordController extends BaseController {
             map.put("reason", wr.getReason());
             map.put("status", wr.getStatus());
             map.put("applyTime", wr.getApplyTime());
-            map.put("auditTime", wr.getAuditTime());
 
-            ClubInfo club = clubInfoService.getOne(wr.getClubId());
+            ClubInfo club = clubInfoService.getById(wr.getClubId());
             if (club != null) map.put("clubName", club.getClubName());
 
-            SysUser user = sysUserService.getOne(wr.getApplicantId());
-            if (user != null) {
-                map.put("applicantName", user.getRealName());
+            SysPresident pres = sysPresidentService.getById(wr.getApplicantId());
+            if (pres != null) {
+                map.put("applicantName", pres.getRealName());
+            } else {
+                SysUser user = sysUserService.getById(wr.getApplicantId());
+                if (user != null) {
+                    map.put("applicantName", user.getRealName());
+                }
             }
 
             resList.add(map);
@@ -70,21 +78,10 @@ public class WithdrawalRecordController extends BaseController {
 
     @PostMapping("/add")
     public R addInfo(WithdrawalRecord record) {
-        record.setStatus(0); // 审批中
+        record.setStatus(1); // 提现直接完成，不需要审批
         record.setApplyTime(new java.util.Date());
         withdrawalRecordService.save(record);
-        return R.successMsg("提现申请已提交");
-    }
-
-    @PostMapping("/audit")
-    public R audit(Long id, Integer status) {
-        WithdrawalRecord record = withdrawalRecordService.getOne(id);
-        if (record == null) return R.error("申请记录不存在");
-        
-        record.setStatus(status);
-        record.setAuditTime(new java.util.Date());
-        withdrawalRecordService.updateById(record);
-        return R.successMsg("审批操作成功");
+        return R.successMsg("提现已完成");
     }
 
     @PostMapping("/del")
