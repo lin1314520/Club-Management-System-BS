@@ -74,7 +74,8 @@ CREATE TABLE `club_info` (
   `status` tinyint(1) DEFAULT '1' COMMENT '状态：0-已注销，1-正常',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '成立时间',
   PRIMARY KEY (`club_id`),
-  KEY `idx_type_id` (`type_id`)
+  KEY `idx_type_id` (`type_id`),
+  CONSTRAINT `fk_club_info_type_id` FOREIGN KEY (`type_id`) REFERENCES `club_type` (`type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='社团信息';
 
 -- 6. 建社申请表
@@ -90,7 +91,9 @@ CREATE TABLE `club_application` (
   `audit_time` datetime DEFAULT NULL COMMENT '审批时间',
   PRIMARY KEY (`application_id`),
   KEY `idx_user_id` (`user_id`),
-  KEY `idx_type_id` (`type_id`)
+  KEY `idx_type_id` (`type_id`),
+  CONSTRAINT `fk_club_app_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`),
+  CONSTRAINT `fk_club_app_type_id` FOREIGN KEY (`type_id`) REFERENCES `club_type` (`type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='建社申请';
 
 -- 7. 社团成员(含入团申请)表
@@ -105,7 +108,9 @@ CREATE TABLE `club_member` (
   `join_time` datetime DEFAULT NULL COMMENT '加入时间',
   PRIMARY KEY (`member_id`),
   KEY `idx_club_id` (`club_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_club_member_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`),
+  CONSTRAINT `fk_club_member_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='社团成员';
 
 -- 8. 活动信息表
@@ -121,7 +126,8 @@ CREATE TABLE `activity_info` (
   `status` tinyint(1) DEFAULT '0' COMMENT '状态：0-未开始，1-进行中，2-已结束',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   PRIMARY KEY (`activity_id`),
-  KEY `idx_club_id` (`club_id`)
+  KEY `idx_club_id` (`club_id`),
+  CONSTRAINT `fk_activity_info_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动信息';
 
 -- 9. 活动参与(报名)表
@@ -136,7 +142,9 @@ CREATE TABLE `activity_participant` (
  `apply_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '报名时间',
  PRIMARY KEY (`id`),
  KEY `idx_activity_id` (`activity_id`),
- KEY `idx_user_id` (`user_id`)
+ KEY `idx_user_id` (`user_id`),
+ CONSTRAINT `fk_act_participant_act_id` FOREIGN KEY (`activity_id`) REFERENCES `activity_info` (`activity_id`),
+ CONSTRAINT `fk_act_participant_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动参与';
 
 -- 10. 活动签到表
@@ -148,7 +156,9 @@ CREATE TABLE `activity_sign_in` (
   `sign_in_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '签到时间',
   PRIMARY KEY (`sign_in_id`),
   KEY `idx_activity_id` (`activity_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_act_sign_in_act_id` FOREIGN KEY (`activity_id`) REFERENCES `activity_info` (`activity_id`),
+  CONSTRAINT `fk_act_sign_in_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动签到';
 
 -- 11. 活动签退表
@@ -160,7 +170,9 @@ CREATE TABLE `activity_sign_out` (
   `sign_out_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '签退时间',
   PRIMARY KEY (`sign_out_id`),
   KEY `idx_activity_id` (`activity_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_act_sign_out_act_id` FOREIGN KEY (`activity_id`) REFERENCES `activity_info` (`activity_id`),
+  CONSTRAINT `fk_act_sign_out_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动签退';
 
 -- 12. 活动反馈(心得)表
@@ -173,7 +185,9 @@ CREATE TABLE `activity_feedback` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '提交时间',
   PRIMARY KEY (`feedback_id`),
   KEY `idx_activity_id` (`activity_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_act_feedback_act_id` FOREIGN KEY (`activity_id`) REFERENCES `activity_info` (`activity_id`),
+  CONSTRAINT `fk_act_feedback_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动反馈';
 
 -- 13. 反馈回复表
@@ -185,7 +199,8 @@ CREATE TABLE `feedback_reply` (
   `content` text NOT NULL COMMENT '回复内容',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '回复时间',
   PRIMARY KEY (`reply_id`),
-  KEY `idx_feedback_id` (`feedback_id`)
+  KEY `idx_feedback_id` (`feedback_id`),
+  CONSTRAINT `fk_feedback_reply_fb_id` FOREIGN KEY (`feedback_id`) REFERENCES `activity_feedback` (`feedback_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='反馈回复';
 
 -- 14. 活动推文表
@@ -198,7 +213,8 @@ CREATE TABLE `activity_tweet` (
   `content` text NOT NULL COMMENT '推文内容',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   PRIMARY KEY (`tweet_id`),
-  KEY `idx_activity_id` (`activity_id`)
+  KEY `idx_activity_id` (`activity_id`),
+  CONSTRAINT `fk_act_tweet_act_id` FOREIGN KEY (`activity_id`) REFERENCES `activity_info` (`activity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动推文';
 
 -- 15. 通知信息表
@@ -212,7 +228,8 @@ CREATE TABLE `notification_info` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   PRIMARY KEY (`notification_id`),
   KEY `idx_club_id` (`club_id`),
-  KEY `idx_publisher_id` (`publisher_id`)
+  KEY `idx_publisher_id` (`publisher_id`),
+  CONSTRAINT `fk_notice_info_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知信息';
 
 -- 16. 缴费通知表
@@ -225,7 +242,8 @@ CREATE TABLE `payment_notice` (
   `deadline` datetime NOT NULL COMMENT '截止时间',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   PRIMARY KEY (`notice_id`),
-  KEY `idx_club_id` (`club_id`)
+  KEY `idx_club_id` (`club_id`),
+  CONSTRAINT `fk_payment_notice_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='缴费通知';
 
 -- 17. 缴费记录表
@@ -239,7 +257,9 @@ CREATE TABLE `payment_record` (
   `pay_time` datetime DEFAULT NULL COMMENT '缴费时间',
   PRIMARY KEY (`record_id`),
   KEY `idx_notice_id` (`notice_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_payment_record_notice_id` FOREIGN KEY (`notice_id`) REFERENCES `payment_notice` (`notice_id`),
+  CONSTRAINT `fk_payment_record_user_id` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='缴费记录';
 
 -- 18. 提现申请表
@@ -254,5 +274,7 @@ CREATE TABLE `withdrawal_record` (
   `apply_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '提现时间',
   PRIMARY KEY (`record_id`),
   KEY `idx_club_id` (`club_id`),
-  KEY `idx_applicant_id` (`applicant_id`)
+  KEY `idx_applicant_id` (`applicant_id`),
+  CONSTRAINT `fk_withdrawal_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`),
+  CONSTRAINT `fk_withdrawal_applicant_id` FOREIGN KEY (`applicant_id`) REFERENCES `sys_president` (`president_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='提现记录';
