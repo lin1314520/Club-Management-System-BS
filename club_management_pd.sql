@@ -47,6 +47,7 @@ CREATE TABLE `sys_user` (
   `email` varchar(100) DEFAULT NULL COMMENT '邮箱',
   `status` tinyint(1) DEFAULT '1' COMMENT '状态：0-禁用，1-正常',
   `member_status` tinyint(1) DEFAULT '0' COMMENT '社团成员状态：0-普通用户，1-社团成员',
+  `birthday` date DEFAULT NULL COMMENT '出生日期',
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`user_id`),
