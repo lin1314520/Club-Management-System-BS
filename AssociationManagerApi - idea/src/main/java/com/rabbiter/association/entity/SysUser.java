@@ -20,7 +20,7 @@ public class SysUser implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "user_id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -70,6 +70,12 @@ public class SysUser implements Serializable {
      */
     @TableField(value = "update_time")
     private Date updateTime;
+
+    /**
+     * 社团成员状态：0-普通用户，1-社团成员
+     */
+    @TableField(value = "member_status")
+    private Integer memberStatus;
 
     public Long getId() {
         return id;
@@ -141,5 +147,13 @@ public class SysUser implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getMemberStatus() {
+        return memberStatus;
+    }
+
+    public void setMemberStatus(Integer memberStatus) {
+        this.memberStatus = memberStatus;
     }
 }

@@ -75,6 +75,7 @@ public class ClubInfoController extends BaseController {
             // Manager (President)
             QueryWrapper<ClubMember> memQw = new QueryWrapper<>();
             memQw.eq("club_id", info.getId()).eq("member_role", 1);
+            memQw.last("limit 1");
             ClubMember president = clubMemberService.getOne(memQw);
             if (president != null) {
                 SysUser user = sysUserService.getOne(president.getUserId());

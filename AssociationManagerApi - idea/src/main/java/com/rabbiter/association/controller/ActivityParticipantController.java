@@ -63,11 +63,13 @@ public class ActivityParticipantController extends BaseController {
             // 查询独立的签到和签退记录
             QueryWrapper<ActivitySignIn> inQw = new QueryWrapper<>();
             inQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
+            inQw.last("limit 1");
             ActivitySignIn signIn = activitySignInService.getOne(inQw);
             map.put("signInTime", signIn != null ? signIn.getSignInTime() : null);
 
             QueryWrapper<ActivitySignOut> outQw = new QueryWrapper<>();
             outQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
+            outQw.last("limit 1");
             ActivitySignOut signOut = activitySignOutService.getOne(outQw);
             map.put("signOutTime", signOut != null ? signOut.getSignOutTime() : null);
 

@@ -14,6 +14,13 @@
 
                         </el-input>
                     </el-form-item>
+                    <el-form-item prop="type">
+                        <el-radio-group v-model="loginForm.type" style="width: 100%; display: flex; justify-content: space-around;">
+                            <el-radio :label="0">管理员</el-radio>
+                            <el-radio :label="1">社长</el-radio>
+                            <el-radio :label="2">用户</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
                     <el-form-item>
                         <el-button style="
                                 margin-top: 15px;
@@ -140,6 +147,7 @@ export default {
             loginForm: {
                 userName: "",
                 passWord: "",
+                type: 2,
             },
             rules: {
                 userName: [
@@ -218,6 +226,7 @@ export default {
                         login({
                             userName: this.usersForm.username,
                             passWord: this.usersForm.password,
+                            type: 2,
                         }).then((res) => {
                             this.$store.commit("setToken", res.data);
                             sessionStorage.setItem("token", res.data);

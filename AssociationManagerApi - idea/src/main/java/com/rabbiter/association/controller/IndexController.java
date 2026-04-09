@@ -62,43 +62,52 @@ public class IndexController extends BaseController {
 
     @PostMapping("/login")
     @ResponseBody
-    public R login(String userName, String passWord, HttpSession session){      
-        Log.info("用户登录，用户名：{}， 密码：{}", userName, passWord);
+    public R login(String userName, String passWord, Integer type, HttpSession session){      
+        Log.info("用户登录，用户名：{}， 密码：{}， 身份类型：{}", userName, passWord, type);
 
-        // 1. Check Admin
-        QueryWrapper<SysAdmin> adminQw = new QueryWrapper<>();
-        adminQw.eq("username", userName);
-        SysAdmin admin = sysAdminService.getOne(adminQw);
-        if (admin != null) {
-            if (passWord.equals(admin.getPassword().trim())) {
-                String token = IDUtils.makeIDByUUID();
-                cacheHandle.addUserCache(token, "0_" + admin.getId());  
-                return R.success("登录成功", token);
-            } else return R.error("密码错误");
+        if (type == null) {
+            type = 2; // 默认普通用户
         }
 
-        // 2. Check President
-        QueryWrapper<SysPresident> presQw = new QueryWrapper<>();
-        presQw.eq("username", userName);
-        SysPresident president = sysPresidentService.getOne(presQw);
-        if (president != null) {
-            if (passWord.equals(president.getPassword().trim())) {
-                String token = IDUtils.makeIDByUUID();
-                cacheHandle.addUserCache(token, "1_" + president.getId());  
-                return R.success("登录成功", token);
-            } else return R.error("密码错误");
-        }
-
-        // 3. Check User
-        QueryWrapper<SysUser> userQw = new QueryWrapper<>();
-        userQw.eq("username", userName);
-        SysUser user = sysUserService.getOne(userQw);
-        if (user != null) {
-            if (passWord.equals(user.getPassword().trim())) {
-                String token = IDUtils.makeIDByUUID();
-                cacheHandle.addUserCache(token, "2_" + user.getId());  
-                return R.success("登录成功", token);
-            } else return R.error("密码错误");
+        if (type == 0) {
+            // 1. Check Admin
+            QueryWrapper<SysAdmin> adminQw = new QueryWrapper<>();
+            adminQw.eq("username", userName);
+            adminQw.last("limit 1");
+            SysAdmin admin = sysAdminService.getOne(adminQw);
+            if (admin != null) {
+                if (passWord.equals(admin.getPassword().trim())) {
+                    String token = IDUtils.makeIDByUUID();
+                    cacheHandle.addUserCache(token, "0_" + admin.getId());  
+                    return R.success("登录成功", token);
+                } else return R.error("密码错误");
+            }
+        } else if (type == 1) {
+            // 2. Check President
+            QueryWrapper<SysPresident> presQw = new QueryWrapper<>();
+            presQw.eq("username", userName);
+            presQw.last("limit 1");
+            SysPresident president = sysPresidentService.getOne(presQw);
+            if (president != null) {
+                if (passWord.equals(president.getPassword().trim())) {
+                    String token = IDUtils.makeIDByUUID();
+                    cacheHandle.addUserCache(token, "1_" + president.getId());  
+                    return R.success("登录成功", token);
+                } else return R.error("密码错误");
+            }
+        } else {
+            // 3. Check User
+            QueryWrapper<SysUser> userQw = new QueryWrapper<>();
+            userQw.eq("username", userName);
+            userQw.last("limit 1");
+            SysUser user = sysUserService.getOne(userQw);
+            if (user != null) {
+                if (passWord.equals(user.getPassword().trim())) {
+                    String token = IDUtils.makeIDByUUID();
+                    cacheHandle.addUserCache(token, "2_" + user.getId());  
+                    return R.success("登录成功", token);
+                } else return R.error("密码错误");
+            }
         }
 
         return R.error("输入的用户名不存在");
@@ -130,6 +139,10 @@ public class IndexController extends BaseController {
 
         if (type == 0) {
             SysAdmin admin = sysAdminService.getById(id);
+            if (admin == null) {
+                cacheHandle.removeUserCache(token);
+                return R.error("用户信息不存在，请重新登录");
+            }
             res.put("userName", admin.getUsername());
             res.put("passWord", admin.getPassword());
             res.put("name", admin.getRealName());
@@ -139,6 +152,10 @@ public class IndexController extends BaseController {
             res.put("createTime", admin.getCreateTime());
         } else if (type == 1) {
             SysPresident pres = sysPresidentService.getById(id);
+            if (pres == null) {
+                cacheHandle.removeUserCache(token);
+                return R.error("用户信息不存在，请重新登录");
+            }
             res.put("userName", pres.getUsername());
             res.put("passWord", pres.getPassword());
             res.put("name", pres.getRealName());
@@ -148,6 +165,10 @@ public class IndexController extends BaseController {
             res.put("createTime", pres.getCreateTime());
         } else {
             SysUser user = sysUserService.getById(id);
+            if (user == null) {
+                cacheHandle.removeUserCache(token);
+                return R.error("用户信息不存在，请重新登录");
+            }
             res.put("userName", user.getUsername());
             res.put("passWord", user.getPassword());
             res.put("name", user.getRealName());
@@ -181,9 +202,19 @@ public class IndexController extends BaseController {
         Long id = Long.valueOf(parts[1]);
         
         String currentPwd = "";
-        if (type == 0) currentPwd = sysAdminService.getById(id).getPassword();
-        else if (type == 1) currentPwd = sysPresidentService.getById(id).getPassword();
-        else currentPwd = sysUserService.getById(id).getPassword();
+        if (type == 0) {
+            SysAdmin admin = sysAdminService.getById(id);
+            if (admin == null) return R.error("用户不存在");
+            currentPwd = admin.getPassword();
+        } else if (type == 1) {
+            SysPresident pres = sysPresidentService.getById(id);
+            if (pres == null) return R.error("用户不存在");
+            currentPwd = pres.getPassword();
+        } else {
+            SysUser user = sysUserService.getById(id);
+            if (user == null) return R.error("用户不存在");
+            currentPwd = user.getPassword();
+        }
 
         if(oldPwd.equals(currentPwd)) {
             return R.success();
@@ -205,14 +236,17 @@ public class IndexController extends BaseController {
 
         if (type == 0) {
             SysAdmin admin = sysAdminService.getById(id);
+            if (admin == null) return R.error("用户不存在");
             admin.setPassword(password);
             sysAdminService.updateById(admin);
         } else if (type == 1) {
             SysPresident pres = sysPresidentService.getById(id);
+            if (pres == null) return R.error("用户不存在");
             pres.setPassword(password);
             sysPresidentService.updateById(pres);
         } else {
             SysUser user = sysUserService.getById(id);
+            if (user == null) return R.error("用户不存在");
             user.setPassword(password);
             sysUserService.updateById(user);
         }

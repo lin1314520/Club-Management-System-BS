@@ -20,7 +20,7 @@ public class ActivityInfo implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "activity_id", type = IdType.AUTO)
     private Long id;
 
     /**

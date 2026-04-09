@@ -21,7 +21,7 @@ public class PaymentRecord implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "record_id", type = IdType.AUTO)
     private Long id;
 
     /**

@@ -90,6 +90,7 @@ public class ClubMemberController extends BaseController {
     public R apply(Long clubId, Long userId) {
         QueryWrapper<ClubMember> qw = new QueryWrapper<>();
         qw.eq("club_id", clubId).eq("user_id", userId);
+        qw.last("limit 1");
         ClubMember exist = clubMemberService.getOne(qw);
         if (exist != null) {
             return R.warn("已存在申请记录或已在社团中");
@@ -130,6 +131,7 @@ public class ClubMemberController extends BaseController {
     public R quit(Long clubId, Long userId) {
         QueryWrapper<ClubMember> qw = new QueryWrapper<>();
         qw.eq("club_id", clubId).eq("user_id", userId);
+        qw.last("limit 1");
         ClubMember exist = clubMemberService.getOne(qw);
         if (exist == null) return R.error("记录不存在");
 
