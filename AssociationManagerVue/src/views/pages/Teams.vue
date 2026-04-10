@@ -414,21 +414,27 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                applyJoinClub(id, this.$store.state.userInfo.id).then((resp) => {
-                    if (resp.code == 0) {
-                        this.$message({
-                            message: "申请已提交，请耐心等待",
-                            type: "success",
-                        });
+                this.$prompt("请输入入社原因(可选)", "入社申请", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    inputPlaceholder: "例如：想学习、想参与活动…",
+                }).then(({ value }) => {
+                    applyJoinClub(id, this.$store.state.userInfo.id, value).then((resp) => {
+                        if (resp.code == 0) {
+                            this.$message({
+                                message: "申请已提交，请耐心等待",
+                                type: "success",
+                            });
 
-                        this.getPageInfo(1, this.pageSize);
-                    } else {
-                        this.$message({
-                            message: resp.msg,
-                            type: "warning",
-                        });
-                    }
-                });
+                            this.getPageInfo(1, this.pageSize);
+                        } else {
+                            this.$message({
+                                message: resp.msg,
+                                type: "warning",
+                            });
+                        }
+                    });
+                }).catch(() => {});
             });
         },
     },

@@ -396,7 +396,9 @@ import {
     getAllTeamList,
     applyJoinActivity,
     getPageActivityParticipants,
-    addNotices
+    addNotices,
+    launchActivitySignIn,
+    launchActivitySignOut
 } from "../../api";
 
 export default {
@@ -458,7 +460,33 @@ export default {
             this.$confirm(`确认要对活动【${row.title}】发起${statusMap[newStatus]}吗?`, "提示", {
                 type: "warning"
             }).then(() => {
-                updActivities({ id: row.id, status: newStatus }).then(resp => {
+                if (newStatus == 1) {
+                    launchActivitySignIn(row.id).then((r) => {
+                        if (r.code != 0) {
+                            this.$message.warning(r.msg);
+                            return;
+                        }
+                        updActivities({ id: row.id, status: newStatus }).then(() => {
+                            this.$alert(`签到已发起，签到码：${r.data}`, "签到码", { confirmButtonText: "确定" });
+                            this.getPageInfo(this.pageIndex, this.pageSize);
+                        });
+                    });
+                    return;
+                }
+                if (newStatus == 2) {
+                    launchActivitySignOut(row.id).then((r) => {
+                        if (r.code != 0) {
+                            this.$message.warning(r.msg);
+                            return;
+                        }
+                        updActivities({ id: row.id, status: newStatus }).then(() => {
+                            this.$alert(`签退已发起，签退码：${r.data}`, "签退码", { confirmButtonText: "确定" });
+                            this.getPageInfo(this.pageIndex, this.pageSize);
+                        });
+                    });
+                    return;
+                }
+                updActivities({ id: row.id, status: newStatus }).then(() => {
                     this.$message.success("操作成功");
                     this.getPageInfo(this.pageIndex, this.pageSize);
                 });

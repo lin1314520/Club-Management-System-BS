@@ -41,14 +41,11 @@
                             <el-tag type="danger" v-if="scope.row.auditStatus == 2">已拒绝</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column align="center" label="签到时间">
+                    <el-table-column align="center" prop="applyReason" label="申请理由"></el-table-column>
+                    <el-table-column align="center" prop="feedback" label="审批反馈"></el-table-column>
+                    <el-table-column align="center" label="审批时间">
                         <template slot-scope="scope">
-                            {{ formatDate(scope.row.signInTime) }}
-                        </template>
-                    </el-table-column>
-                    <el-table-column align="center" label="签退时间">
-                        <template slot-scope="scope">
-                            {{ formatDate(scope.row.signOutTime) }}
+                            {{ formatDate(scope.row.auditTime) }}
                         </template>
                     </el-table-column>
                     
@@ -59,15 +56,9 @@
                             <el-button v-if="userType == 1 && scope.row.auditStatus == 0" type="danger" size="mini" @click="audit(scope.row.id, 2)">拒绝</el-button>
                             
                             <!-- 用户操作 -->
-                            <el-button v-if="userType == 2 && scope.row.auditStatus == 1 && !scope.row.signInTime && scope.row.activityStatus == 1" type="primary" size="mini" @click="signIn(scope.row.id)">签到</el-button>
-                            <span v-if="userType == 2 && scope.row.auditStatus == 1 && !scope.row.signInTime && scope.row.activityStatus == 0" style="color: gray">等待发起签到</span>
-                            <span v-if="userType == 2 && scope.row.auditStatus == 1 && !scope.row.signInTime && scope.row.activityStatus > 1" style="color: red">缺席签到</span>
-                            
-                            <el-button v-if="userType == 2 && scope.row.signInTime && !scope.row.signOutTime && scope.row.activityStatus == 2" type="warning" size="mini" @click="signOut(scope.row.id)">签退</el-button>
-                            <span v-if="userType == 2 && scope.row.signInTime && !scope.row.signOutTime && scope.row.activityStatus < 2" style="color: gray">等待发起签退</span>
-                            <span v-if="userType == 2 && scope.row.signInTime && !scope.row.signOutTime && scope.row.activityStatus > 2" style="color: red">缺席签退</span>
-                            
-                            <span v-if="userType == 2 && scope.row.signOutTime" style="color: green">已完成</span>
+                            <el-button v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus == 1" type="primary" size="mini" @click="signIn(scope.row)">签到</el-button>
+                            <span v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus != 1" style="color: gray">等待发起签到</span>
+                            <el-button v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus == 2" type="warning" size="mini" @click="signOut(scope.row)">签退</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -81,7 +72,7 @@
 </template>
 
 <script>
-import { getLoginUser, getPageActivityParticipants, auditActivityParticipant, signInActivity, signOutActivity } from "../../api";
+import { getLoginUser, getPageActivityParticipants, auditActivityParticipantWithFeedback, punchCardSignIn, punchCardSignOut } from "../../api";
 
 export default {
     data() {
@@ -133,22 +124,40 @@ export default {
             this.getPageInfo(pageIndex, this.pageSize);
         },
         audit(id, status) {
-            auditActivityParticipant(id, status).then(resp => {
-                this.$message.success(resp.msg);
-                this.getPageInfo(this.pageIndex, this.pageSize);
-            });
+            this.$prompt("请输入审批反馈(可选)", "审批", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                inputPlaceholder: "例如：欢迎加入 / 名额已满…",
+            }).then(({ value }) => {
+                auditActivityParticipantWithFeedback(id, status, value).then(resp => {
+                    this.$message.success(resp.msg);
+                    this.getPageInfo(this.pageIndex, this.pageSize);
+                });
+            }).catch(() => {});
         },
-        signIn(id) {
-            signInActivity(id).then(resp => {
-                this.$message.success(resp.msg);
-                this.getPageInfo(this.pageIndex, this.pageSize);
-            });
+        signIn(row) {
+            this.$prompt("请输入签到码(signInId)", "签到打卡", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                inputPlaceholder: "社长发起签到后生成的ID",
+            }).then(({ value }) => {
+                punchCardSignIn(value, row.userId).then(resp => {
+                    this.$message.success(resp.msg);
+                    this.getPageInfo(this.pageIndex, this.pageSize);
+                });
+            }).catch(() => {});
         },
-        signOut(id) {
-            signOutActivity(id).then(resp => {
-                this.$message.success(resp.msg);
-                this.getPageInfo(this.pageIndex, this.pageSize);
-            });
+        signOut(row) {
+            this.$prompt("请输入签退码(signOutId)", "签退打卡", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                inputPlaceholder: "社长发起签退后生成的ID",
+            }).then(({ value }) => {
+                punchCardSignOut(value, row.userId).then(resp => {
+                    this.$message.success(resp.msg);
+                    this.getPageInfo(this.pageIndex, this.pageSize);
+                });
+            }).catch(() => {});
         }
     },
     mounted() {
