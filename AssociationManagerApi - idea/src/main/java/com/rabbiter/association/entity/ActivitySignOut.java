@@ -11,17 +11,17 @@ public class ActivitySignOut {
     private Long id;
     @TableField("activity_id")
     private Long activityId;
-    @TableField("user_id")
-    private Long userId;
+    @TableField("sign_out_status")
+    private Integer signOutStatus;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @TableField("sign_out_time")
-    private Date signOutTime;
+    @TableField("launch_time")
+    private Date launchTime;
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getActivityId() { return activityId; }
     public void setActivityId(Long activityId) { this.activityId = activityId; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-    public Date getSignOutTime() { return signOutTime; }
-    public void setSignOutTime(Date signOutTime) { this.signOutTime = signOutTime; }
+    public Integer getSignOutStatus() { return signOutStatus; }
+    public void setSignOutStatus(Integer signOutStatus) { this.signOutStatus = signOutStatus; }
+    public Date getLaunchTime() { return launchTime; }
+    public void setLaunchTime(Date launchTime) { this.launchTime = launchTime; }
 }

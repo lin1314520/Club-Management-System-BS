@@ -11,17 +11,17 @@ public class ActivitySignIn {
     private Long id;
     @TableField("activity_id")
     private Long activityId;
-    @TableField("user_id")
-    private Long userId;
+    @TableField("sign_in_status")
+    private Integer signInStatus;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @TableField("sign_in_time")
-    private Date signInTime;
+    @TableField("launch_time")
+    private Date launchTime;
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getActivityId() { return activityId; }
     public void setActivityId(Long activityId) { this.activityId = activityId; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-    public Date getSignInTime() { return signInTime; }
-    public void setSignInTime(Date signInTime) { this.signInTime = signInTime; }
+    public Integer getSignInStatus() { return signInStatus; }
+    public void setSignInStatus(Integer signInStatus) { this.signInStatus = signInStatus; }
+    public Date getLaunchTime() { return launchTime; }
+    public void setLaunchTime(Date launchTime) { this.launchTime = launchTime; }
 }

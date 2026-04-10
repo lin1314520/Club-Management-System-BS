@@ -57,21 +57,12 @@ public class ActivityParticipantController extends BaseController {
             map.put("id", pt.getId());
             map.put("activityId", pt.getActivityId());
             map.put("userId", pt.getUserId());
+            // v2 changed auditStatus, and dropped signInTime/signOutTime
             map.put("auditStatus", pt.getAuditStatus());
+            map.put("applyReason", pt.getApplyReason());
+            map.put("feedback", pt.getFeedback());
+            map.put("auditTime", pt.getAuditTime());
             map.put("applyTime", pt.getApplyTime());
-
-            // 查询独立的签到和签退记录
-            QueryWrapper<ActivitySignIn> inQw = new QueryWrapper<>();
-            inQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
-            inQw.last("limit 1");
-            ActivitySignIn signIn = activitySignInService.getOne(inQw);
-            map.put("signInTime", signIn != null ? signIn.getSignInTime() : null);
-
-            QueryWrapper<ActivitySignOut> outQw = new QueryWrapper<>();
-            outQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
-            outQw.last("limit 1");
-            ActivitySignOut signOut = activitySignOutService.getOne(outQw);
-            map.put("signOutTime", signOut != null ? signOut.getSignOutTime() : null);
 
             ActivityInfo activity = activityInfoService.getById(pt.getActivityId());
             if (activity != null) {
@@ -110,53 +101,18 @@ public class ActivityParticipantController extends BaseController {
     }
 
     @PostMapping("/audit")
-    public R audit(Long id, Integer auditStatus) {
+    public R audit(Long id, Integer auditStatus, String feedback) {
         ActivityParticipant pt = activityParticipantService.getById(id);
-        if (pt == null) return R.error("报名记录不存在");
-        
+        if (pt == null) return R.error("记录不存在");
+
         pt.setAuditStatus(auditStatus);
+        pt.setFeedback(feedback);
+        pt.setAuditTime(new java.util.Date());
         activityParticipantService.updateById(pt);
-        return R.successMsg("审核操作成功");
+        return R.successMsg("审批成功");
     }
 
-    @PostMapping("/signIn")
-    public R signIn(Long id) {
-        ActivityParticipant pt = activityParticipantService.getById(id);
-        if (pt == null) return R.error("报名记录不存在");
-        if (pt.getAuditStatus() != 1) return R.warn("报名未审核通过，无法签到");
-
-        QueryWrapper<ActivitySignIn> qw = new QueryWrapper<>();
-        qw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
-        if (activitySignInService.count(qw) > 0) return R.warn("您已经签到过了");
-
-        ActivitySignIn signIn = new ActivitySignIn();
-        signIn.setActivityId(pt.getActivityId());
-        signIn.setUserId(pt.getUserId());
-        signIn.setSignInTime(new java.util.Date());
-        activitySignInService.save(signIn);
-        return R.successMsg("签到成功");
-    }
-
-    @PostMapping("/signOut")
-    public R signOut(Long id) {
-        ActivityParticipant pt = activityParticipantService.getById(id);
-        if (pt == null) return R.error("报名记录不存在");
-
-        QueryWrapper<ActivitySignIn> inQw = new QueryWrapper<>();
-        inQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
-        if (activitySignInService.count(inQw) == 0) return R.warn("请先签到");
-
-        QueryWrapper<ActivitySignOut> outQw = new QueryWrapper<>();
-        outQw.eq("activity_id", pt.getActivityId()).eq("user_id", pt.getUserId());
-        if (activitySignOutService.count(outQw) > 0) return R.warn("您已经签退过了");
-
-        ActivitySignOut signOut = new ActivitySignOut();
-        signOut.setActivityId(pt.getActivityId());
-        signOut.setUserId(pt.getUserId());
-        signOut.setSignOutTime(new java.util.Date());
-        activitySignOutService.save(signOut);
-        return R.successMsg("签退成功");
-    }
+    // --- Note: Sign in/out logic has been moved to ActivitySignIn/Out entities ---
 
     @PostMapping("/del")
     public R delInfo(Long id) {

@@ -86,28 +86,20 @@ public class ClubMemberController extends BaseController {
         return R.successData(pageData);
     }
 
-    @PostMapping("/apply")
-    public R apply(Long clubId, Long userId) {
-        QueryWrapper<ClubMember> qw = new QueryWrapper<>();
-        qw.eq("club_id", clubId).eq("user_id", userId);
-        qw.last("limit 1");
-        ClubMember exist = clubMemberService.getOne(qw);
-        if (exist != null) {
-            return R.warn("已存在申请记录或已在社团中");
-        }
-
-        ClubMember member = new ClubMember();
-        member.setClubId(clubId);
-        member.setUserId(userId);
-        member.setStatus(0); // 申请中
-        member.setMemberRole(0); // 普通成员
-        member.setApplyTime(new java.util.Date());
-        clubMemberService.save(member);
-        return R.successMsg("申请成功");
+    // V2: club_member is for active members only, JoinClubApplication is for applying
+    @PostMapping("/add")
+    public R addMember(ClubMember clubMember) {
+        // Here we just insert directly if needed, or this should go through JoinClubApplication
+        clubMember.setStatus(1); // 1-正常
+        clubMember.setJoinTime(new java.util.Date());
+        clubMemberService.save(clubMember);
+        return R.successMsg("操作成功");
     }
 
     @PostMapping("/audit")
     public R audit(Long id, Integer status) {
+        // V2 NOTE: In V2, audit should be done on join_club_application, not club_member. 
+        // This is a placeholder/legacy method if frontend is not updated yet.
         ClubMember member = clubMemberService.getById(id);
         if (member == null) return R.error("记录不存在");
         

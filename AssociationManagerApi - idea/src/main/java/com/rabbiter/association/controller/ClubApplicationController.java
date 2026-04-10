@@ -64,10 +64,11 @@ public class ClubApplicationController extends BaseController {
             Map<String, Object> map = new HashMap<>();
             map.put("id", app.getId());
             map.put("userId", app.getUserId());
-            map.put("clubName", app.getClubName());
+            // map.put("clubName", app.getClubName()); // v2 removed clubName
             map.put("typeId", app.getTypeId());
             map.put("description", app.getDescription());
-            map.put("status", app.getStatus());
+            map.put("auditStatus", app.getAuditStatus());
+            map.put("applyResult", app.getApplyResult());
             map.put("applyTime", app.getApplyTime());
             map.put("auditTime", app.getAuditTime());
 
@@ -96,25 +97,29 @@ public class ClubApplicationController extends BaseController {
 
     @PostMapping("/add")
     public R addInfo(ClubApplication clubApplication) {
-        clubApplication.setStatus(0); // 审批中
+        clubApplication.setAuditStatus(0); // 审批中
+        clubApplication.setApplyResult(0); // 未处理
         clubApplication.setApplyTime(new java.util.Date());
         clubApplicationService.save(clubApplication);
         return R.successMsg("提交申请成功");
     }
 
     @PostMapping("/audit")
-    public R audit(Long id, Integer status) {
+    public R audit(Long id, Integer auditStatus) {
         ClubApplication app = clubApplicationService.getById(id);
-        if (app == null) return R.error("申请记录不存在");
-        
-        app.setStatus(status);
+        if (app == null) {
+            return R.warn("申请记录不存在");
+        }
+        app.setAuditStatus(auditStatus);
         app.setAuditTime(new java.util.Date());
-        clubApplicationService.updateById(app);
         
-        if (status == 1) { // 审批通过
-            // 自动插入社团信息
+        // 审批通过
+        if (auditStatus == 1) {
+            app.setApplyResult(1);
+            // 1. 创建社团
             ClubInfo club = new ClubInfo();
-            club.setClubName(app.getClubName());
+            // club.setClubName(app.getClubName()); // v2 removed clubName, you may need to get it from description or UI input
+            club.setClubName("新社团_" + app.getId()); // fallback
             club.setTypeId(app.getTypeId());
             club.setDescription(app.getDescription());
             club.setStatus(1); // 正常
@@ -146,8 +151,11 @@ public class ClubApplicationController extends BaseController {
             member.setStatus(1); // 已加入
             member.setJoinTime(new java.util.Date());
             clubMemberService.save(member);
+        } else if (auditStatus == 2) {
+            app.setApplyResult(2); // 拒绝
         }
 
+        clubApplicationService.updateById(app);
         return R.successMsg("审批操作成功");
     }
 
@@ -156,10 +164,11 @@ public class ClubApplicationController extends BaseController {
         ClubApplication app = clubApplicationService.getById(id);
         if (app == null) return R.error("申请记录不存在");
         
-        if (app.getStatus() != 0) {
+        if (app.getAuditStatus() != 0) {
             return R.warn("仅审批中的申请可撤销");
         }
-        app.setStatus(3); // 撤销
+        app.setAuditStatus(3); // 撤销
+        app.setApplyResult(3); // 撤销
         clubApplicationService.updateById(app);
         return R.successMsg("撤销成功");
     }
