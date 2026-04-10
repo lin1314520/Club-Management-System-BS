@@ -94,6 +94,14 @@
                     </el-table-column>
                     <el-table-column
                         align="center"
+                        label="更新时间"
+                    >
+                        <template slot-scope="scope">
+                            {{ formatDate(scope.row.updateTime) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        align="center"
                         prop="total"
                         label="社团人数"
                     ></el-table-column>

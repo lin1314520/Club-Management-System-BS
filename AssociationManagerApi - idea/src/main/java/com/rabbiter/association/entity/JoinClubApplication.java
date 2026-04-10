@@ -41,8 +41,7 @@ public class JoinClubApplication implements Serializable {
     private Date auditTime;
 
     @TableField("feedback")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date feedback;
+    private String feedback;
 
     // Getters and Setters
     public Long getJoinAppId() { return joinAppId; }
@@ -66,6 +65,6 @@ public class JoinClubApplication implements Serializable {
     public Date getAuditTime() { return auditTime; }
     public void setAuditTime(Date auditTime) { this.auditTime = auditTime; }
 
-    public Date getFeedback() { return feedback; }
-    public void setFeedback(Date feedback) { this.feedback = feedback; }
+    public String getFeedback() { return feedback; }
+    public void setFeedback(String feedback) { this.feedback = feedback; }
 }

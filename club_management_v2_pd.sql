@@ -127,7 +127,7 @@ CREATE TABLE `join_club_application` (
   `join_reason` text COMMENT '入社原因',
   `apply_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
   `audit_time` datetime DEFAULT NULL COMMENT '审批时间',
-  `feedback` datetime DEFAULT NULL COMMENT '申请反馈',
+  `feedback` varchar(255) DEFAULT NULL COMMENT '申请反馈',
   PRIMARY KEY (`join_app_id`),
   KEY `idx_club_id` (`club_id`),
   KEY `idx_user_id` (`user_id`),

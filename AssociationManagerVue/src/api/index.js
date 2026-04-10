@@ -97,8 +97,8 @@ export function getPageJoinClubApplications(pageIndex, pageSize, clubId, userId)
 		params: { page: pageIndex, limit: pageSize, clubId, userId }
 	});
 }
-export function auditJoinClubApplication(joinAppId, auditStatus) {
-	return http.post('/joinClubApplication/audit', { joinAppId, auditStatus });
+export function auditJoinClubApplication(joinAppId, auditStatus, feedback) {
+	return http.post('/joinClubApplication/audit', { joinAppId, auditStatus, feedback });
 }
 export function quitClub(clubId, userId) {
 	return http.post('/clubMember/quit', { clubId, userId });
@@ -201,8 +201,8 @@ export function getPageActivityParticipants(pageIndex, pageSize, activityId, use
 		params: { pageIndex, pageSize, activityId, userId, auditStatus }
 	});
 }
-export function applyJoinActivity(activityId, userId) {
-	return http.post('/activityParticipant/apply', { activityId, userId });
+export function applyJoinActivity(activityId, userId, applyReason) {
+	return http.post('/activityParticipant/apply', { activityId, userId, applyReason });
 }
 export function auditActivityParticipant(id, auditStatus) {
 	return http.post('/activityParticipant/audit', { id, auditStatus });

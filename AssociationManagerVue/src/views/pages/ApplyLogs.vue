@@ -96,6 +96,11 @@
                     </el-table-column>
                     <el-table-column
                         align="center"
+                        prop="feedback"
+                        label="审批反馈"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
                         label="审批时间"
                         width="160"
                     >
@@ -206,14 +211,19 @@ export default {
             );
         },
         updInfo(data, status) {
-            auditJoinClubApplication(data.joinAppId, status).then((resp) => {
-                this.$message({
-                    message: resp.msg,
-                    type: "success",
+            this.$prompt("请输入审批反馈(可选)", "审批", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                inputPlaceholder: "例如：欢迎加入 / 抱歉，名额已满…",
+            }).then(({ value }) => {
+                auditJoinClubApplication(data.joinAppId, status, value).then((resp) => {
+                    this.$message({
+                        message: resp.msg,
+                        type: "success",
+                    });
+                    this.getPageInfo(this.pageIndex, this.pageSize);
                 });
-
-                this.getPageInfo(1, this.pageSize);
-            });
+            }).catch(() => {});
         },
     },
     mounted() {

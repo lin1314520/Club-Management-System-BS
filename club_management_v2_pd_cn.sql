@@ -127,7 +127,7 @@ CREATE TABLE `入社申请` (
   `入社原因` text COMMENT '入社原因',
   `申请时间` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
   `审批时间` datetime DEFAULT NULL COMMENT '审批时间',
-  `申请反馈` datetime DEFAULT NULL COMMENT '申请反馈',
+  `申请反馈` varchar(255) DEFAULT NULL COMMENT '申请反馈',
   PRIMARY KEY (`入社申请id`),
   KEY `idx_club_id` (`社团信息id`),
   KEY `idx_user_id` (`社员id`),

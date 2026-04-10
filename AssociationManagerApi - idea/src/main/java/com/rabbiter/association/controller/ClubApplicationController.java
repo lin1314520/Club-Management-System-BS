@@ -53,7 +53,7 @@ public class ClubApplicationController extends BaseController {
             qw.eq("user_id", userId);
         }
         if (status != null) {
-            qw.eq("status", status);
+            qw.eq("audit_status", status);
         }
         qw.orderByDesc("apply_time");
 

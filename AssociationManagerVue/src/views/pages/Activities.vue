@@ -594,12 +594,14 @@ export default {
             this.showAddFlag = true;
         },
         active(id) {
-            this.$confirm("确认报名该活动吗?", "提示", {
+            this.$prompt("请输入报名理由：", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
-                type: "warning",
-            }).then(() => {
-                applyJoinActivity(id, this.$store.state.userInfo.id).then((resp) => {
+                inputPattern: /.+/,
+                inputErrorMessage: '报名理由不能为空'
+            })
+            .then(({ value }) => {
+                applyJoinActivity(id, this.$store.state.userInfo.id, value).then((resp) => {
                     if (resp.code == 0) {
                         this.$message({
                             message: "报名成功，等待审核",
@@ -612,6 +614,12 @@ export default {
                             type: "warning",
                         });
                     }
+                });
+            })
+            .catch(() => {
+                this.$message({
+                    type: "info",
+                    message: "已取消报名",
                 });
             });
         },

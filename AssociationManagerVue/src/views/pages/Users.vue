@@ -94,6 +94,15 @@
                         prop="email"
                         label="邮箱"
                     ></el-table-column>
+                    <el-table-column
+                        align="center"
+                        prop="birthday"
+                        label="出生日期"
+                    >
+                        <template slot-scope="scope">
+                            {{ scope.row.birthday ? scope.row.birthday.substring(0, 10) : '' }}
+                        </template>
+                    </el-table-column>
                     <el-table-column align="center" label="用户类型">
                         <template slot-scope="scope">
                             <el-tag v-if="scope.row.type == 0" type="danger">管理员</el-tag>
@@ -228,6 +237,17 @@
                             </el-select>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="出生日期">
+                            <el-date-picker
+                                v-model="usersForm.birthday"
+                                type="date"
+                                placeholder="选择出生日期"
+                                format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd">
+                            </el-date-picker>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -304,6 +324,19 @@
                                 <el-option label="正常" :value="1"></el-option>
                                 <el-option label="禁用" :value="0"></el-option>
                             </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="15">
+                    <el-col :span="12">
+                        <el-form-item label="出生日期">
+                            <el-date-picker
+                                v-model="usersForm.birthday"
+                                type="date"
+                                placeholder="选择出生日期"
+                                format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd">
+                            </el-date-picker>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -425,7 +458,8 @@ export default {
                 phone: "",
                 email: "",
                 status: 1,
-                type: 2
+                type: 2,
+                birthday: null
             };
         },
 
