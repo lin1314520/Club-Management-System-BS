@@ -16,6 +16,14 @@ public class SysPresident {
     private String phone;
     private String email;
     private Integer status;
+
+    /**
+     * 出生日期
+     */
+    @TableField("birthday")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date birthday;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "create_time")
     private Date createTime;

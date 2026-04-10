@@ -12,7 +12,7 @@ import java.util.Date;
  * 数据实体类
  * 系统用户表
  */
-@TableName(value = "sys_user")
+@TableName(value = "club_member_user")
 public class SysUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -76,6 +76,25 @@ public class SysUser implements Serializable {
      */
     @TableField(value = "member_status")
     private Integer memberStatus;
+
+    /**
+     * 角色
+     */
+    @TableField(value = "role")
+    private Integer role;
+
+    /**
+     * 申请结果
+     */
+    @TableField(value = "apply_result")
+    private Integer applyResult;
+
+    /**
+     * 出生日期
+     */
+    @TableField(value = "birthday")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date birthday;
 
     public Long getId() {
         return id;
@@ -155,5 +174,29 @@ public class SysUser implements Serializable {
 
     public void setMemberStatus(Integer memberStatus) {
         this.memberStatus = memberStatus;
+    }
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
+    public Integer getApplyResult() {
+        return applyResult;
+    }
+
+    public void setApplyResult(Integer applyResult) {
+        this.applyResult = applyResult;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
 }

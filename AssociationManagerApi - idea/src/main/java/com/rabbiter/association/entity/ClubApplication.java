@@ -48,10 +48,16 @@ public class ClubApplication implements Serializable {
     private String description;
 
     /**
-     * 审批状态：0-审批中，1-已通过，2-已拒绝，3-已撤销
+     * 审批状态
      */
-    @TableField(value = "status")
-    private Integer status;
+    @TableField(value = "audit_status")
+    private Integer auditStatus;
+
+    /**
+     * 申请结果
+     */
+    @TableField(value = "apply_result")
+    private Integer applyResult;
 
     /**
      * 申请时间
@@ -105,12 +111,20 @@ public class ClubApplication implements Serializable {
         this.description = description;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Integer getAuditStatus() {
+        return auditStatus;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setAuditStatus(Integer auditStatus) {
+        this.auditStatus = auditStatus;
+    }
+
+    public Integer getApplyResult() {
+        return applyResult;
+    }
+
+    public void setApplyResult(Integer applyResult) {
+        this.applyResult = applyResult;
     }
 
     public Date getApplyTime() {

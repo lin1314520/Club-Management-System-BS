@@ -12,15 +12,15 @@ import java.util.Date;
  * 数据实体类
  * 活动参与表
  */
-@TableName(value = "activity_participant")
+@TableName("activity_application")
 public class ActivityParticipant implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键ID
+     * 活动申请id
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "apply_id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -36,28 +36,36 @@ public class ActivityParticipant implements Serializable {
     private Long userId;
 
     /**
-     * 审核状态：0-待审核，1-已通过，2-已拒绝
+     * 审核状态
      */
-    @TableField(value = "audit_status")
+    @TableField("audit_status")
     private Integer auditStatus;
 
     /**
-     * 签到时间
+     * 申请理由
      */
-    @TableField(value = "sign_in_time")
-    private Date signInTime;
+    @TableField("apply_reason")
+    private String applyReason;
 
     /**
-     * 签退时间
+     * 申请反馈
      */
-    @TableField(value = "sign_out_time")
-    private Date signOutTime;
+    @TableField("feedback")
+    private String feedback;
 
     /**
      * 报名时间
      */
-    @TableField(value = "apply_time")
+    @TableField("apply_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date applyTime;
+
+    /**
+     * 审核时间
+     */
+    @TableField("audit_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date auditTime;
 
     public Long getId() {
         return id;
@@ -91,20 +99,28 @@ public class ActivityParticipant implements Serializable {
         this.auditStatus = auditStatus;
     }
 
-    public Date getSignInTime() {
-        return signInTime;
+    public String getApplyReason() {
+        return applyReason;
     }
 
-    public void setSignInTime(Date signInTime) {
-        this.signInTime = signInTime;
+    public void setApplyReason(String applyReason) {
+        this.applyReason = applyReason;
     }
 
-    public Date getSignOutTime() {
-        return signOutTime;
+    public String getFeedback() {
+        return feedback;
     }
 
-    public void setSignOutTime(Date signOutTime) {
-        this.signOutTime = signOutTime;
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
+    public Date getAuditTime() {
+        return auditTime;
+    }
+
+    public void setAuditTime(Date auditTime) {
+        this.auditTime = auditTime;
     }
 
     public Date getApplyTime() {
