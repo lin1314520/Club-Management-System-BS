@@ -261,6 +261,7 @@ CREATE TABLE `通知信息` (
   `发布时间` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
   PRIMARY KEY (`通知信息id`),
   KEY `idx_club_id` (`社团信息id`),
+  KEY `idx_publisher_id` (`发布人id`),
   CONSTRAINT `fk_notice_info_club_id` FOREIGN KEY (`社团信息id`) REFERENCES `社团信息` (`社团信息id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知信息';
 
