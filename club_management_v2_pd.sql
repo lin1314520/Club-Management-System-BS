@@ -101,7 +101,23 @@ CREATE TABLE `club_application` (
   CONSTRAINT `fk_club_app_type_id` FOREIGN KEY (`type_id`) REFERENCES `club_type` (`type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='建社申请';
 
--- 7. 入社申请表 (新增中间表)
+-- 7. 社团成员表现态 (保留/新增，用于记录已加入的成员)
+DROP TABLE IF EXISTS `club_member`;
+CREATE TABLE `club_member` (
+  `member_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '社团成员id',
+  `club_id` bigint(20) NOT NULL COMMENT '社团信息ID',
+  `user_id` bigint(20) NOT NULL COMMENT '社员ID',
+  `member_role` tinyint(1) DEFAULT '0' COMMENT '社内角色：0-普通成员，1-社长等',
+  `join_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态：1-正常，0-已退出',
+  PRIMARY KEY (`member_id`),
+  KEY `idx_club_id` (`club_id`),
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_club_member_club_id` FOREIGN KEY (`club_id`) REFERENCES `club_info` (`club_id`),
+  CONSTRAINT `fk_club_member_user_id` FOREIGN KEY (`user_id`) REFERENCES `club_member_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='社团成员';
+
+-- 7.1 入社申请表 (中间表，记录申请过程)
 DROP TABLE IF EXISTS `join_club_application`;
 CREATE TABLE `join_club_application` (
   `join_app_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '入社申请id',
