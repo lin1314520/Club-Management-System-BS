@@ -2,7 +2,7 @@ package com.rabbiter.association.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.rabbiter.association.common.R;
+import com.rabbiter.association.msg.R;
 import com.rabbiter.association.entity.ClubInfo;
 import com.rabbiter.association.entity.ClubMember;
 import com.rabbiter.association.entity.JoinClubApplication;

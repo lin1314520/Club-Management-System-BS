@@ -1,7 +1,7 @@
 package com.rabbiter.association.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.rabbiter.association.common.R;
+import com.rabbiter.association.msg.R;
 import com.rabbiter.association.entity.ActivitySignIn;
 import com.rabbiter.association.entity.SignInRecord;
 import com.rabbiter.association.service.ActivitySignInService;
@@ -44,7 +44,7 @@ public class ActivitySignInController {
         activitySignInService.save(signIn);
 
         // 返回签到记录的ID，可以供前端生成打卡二维码
-        return R.successData(signIn.getSignInId());
+        return R.successData(signIn.getId());
     }
 
     /**

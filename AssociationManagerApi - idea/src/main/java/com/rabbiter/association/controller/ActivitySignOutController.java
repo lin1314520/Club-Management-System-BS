@@ -1,7 +1,7 @@
 package com.rabbiter.association.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.rabbiter.association.common.R;
+import com.rabbiter.association.msg.R;
 import com.rabbiter.association.entity.ActivitySignOut;
 import com.rabbiter.association.entity.SignOutRecord;
 import com.rabbiter.association.service.ActivitySignOutService;
@@ -42,7 +42,7 @@ public class ActivitySignOutController {
         signOut.setLaunchTime(new Date());
         activitySignOutService.save(signOut);
 
-        return R.successData(signOut.getSignOutId());
+        return R.successData(signOut.getId());
     }
 
     /**
