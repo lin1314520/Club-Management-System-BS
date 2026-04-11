@@ -233,6 +233,28 @@ export function delActivityParticipant(id) {
 	return http.post('/activityParticipant/del', { id });
 }
 
+export function getPageSignInRecords(pageIndex, pageSize, activityId, userId) {
+	return http.get('/signInRecord/page', {
+		params: { pageIndex, pageSize, activityId, userId }
+	});
+}
+
+export function getPageSignOutRecords(pageIndex, pageSize, activityId, userId) {
+	return http.get('/signOutRecord/page', {
+		params: { pageIndex, pageSize, activityId, userId }
+	});
+}
+
+export function getPageActivityTweets(pageIndex, pageSize, activityId, title) {
+	return http.get('/activityTweet/page', {
+		params: { pageIndex, pageSize, activityId, title }
+	});
+}
+
+export function delActivityTweet(id) {
+	return http.post('/activityTweet/del', { id });
+}
+
 /** 10. 活动反馈(心得)接口 */
 export function getPageActivityFeedbacks(pageIndex, pageSize, activityId, userId) {
 	return http.get('/activityFeedback/page', {

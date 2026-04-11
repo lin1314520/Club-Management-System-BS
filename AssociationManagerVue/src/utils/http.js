@@ -63,6 +63,11 @@ const generateMockList = (url) => {
             email: "test" + i + "@example.com",
             birthday: "2000-01-01",
             manager: "负责人" + i,
+            managerName: "测试社长" + i,
+            updateTime: "2026-04-11 12:00:00",
+            publisherName: "发布人" + i,
+            noticeTitle: "测试缴费通知" + i,
+            activityTitle: "测试活动标题" + i,
             location: "活动地点" + i,
             feedback: "审批意见" + i,
             reason: "申请原因" + i,
@@ -128,21 +133,19 @@ service.request = function(config) {
             if (url.includes('login') || url.includes('/info')) {
                 let type = sessionStorage.getItem("mock_login_type") || 2;
                 resolve({
+                    code: 0,
+                    msg: "模拟登录成功",
                     data: {
-                        code: 1,
-                        msg: "模拟登录成功",
-                        data: {
-                            id: "U2026001",
-                            type: parseInt(type),
-                            username: "admin",
-                            name: type == 0 ? "张三 (管理员)" : (type == 1 ? "李四 (社长)" : "王五 (用户)"),
-                            gender: "男",
-                            age: 22,
-                            birthday: "2000-01-01",
-                            phone: "13800138000",
-                            address: "测试地址",
-                            token: "mock_token_for_test"
-                        }
+                        id: "U2026001",
+                        type: parseInt(type),
+                        username: "admin",
+                        name: type == 0 ? "张三 (管理员)" : (type == 1 ? "李四 (社长)" : "王五 (用户)"),
+                        gender: "男",
+                        age: 22,
+                        birthday: "2000-01-01",
+                        phone: "13800138000",
+                        address: "测试地址",
+                        token: "mock_token_for_test"
                     }
                 });
                 return;
@@ -150,39 +153,33 @@ service.request = function(config) {
             
             if (url.includes('sys/notices')) {
                 resolve({
-                    data: {
-                        code: 1,
-                        msg: "成功",
-                        data: generateMockList(url)
-                    }
+                    code: 0,
+                    msg: "成功",
+                    data: generateMockList(url)
                 });
                 return;
             }
 
             if (url.includes('clubType/list') || url.includes('clubInfo/list')) {
                 resolve({
-                    data: {
-                        code: 1,
-                        msg: "成功",
-                        data: generateMockList(url)
-                    }
+                    code: 0,
+                    msg: "成功",
+                    data: generateMockList(url)
                 });
                 return;
             }
 
             if (url.includes('page') || url.includes('list') || url.includes('activeLogs')) {
                 resolve({
+                    code: 0,
+                    msg: "成功",
                     data: {
-                        code: 1,
-                        msg: "成功",
-                        data: {
-                            data: generateMockList(url),
-                            pageIndex: 1,
-                            pageSize: 10,
-                            pageTotal: 1,
-                            count: 5,
-                            total: 5 // some APIs use total
-                        }
+                        data: generateMockList(url),
+                        pageIndex: 1,
+                        pageSize: 10,
+                        pageTotal: 1,
+                        count: 5,
+                        total: 5 // some APIs use total
                     }
                 });
                 return;
@@ -190,11 +187,9 @@ service.request = function(config) {
 
             // default success
             resolve({
-                data: {
-                    code: 1,
-                    msg: "操作成功(模拟前端测试)",
-                    data: null
-                }
+                code: 0,
+                msg: "操作成功(模拟前端测试)",
+                data: null
             });
         }, 100);
     });
