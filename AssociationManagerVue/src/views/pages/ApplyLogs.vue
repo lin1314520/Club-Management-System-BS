@@ -78,7 +78,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="userType == 1 || userType == 0"
+                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"

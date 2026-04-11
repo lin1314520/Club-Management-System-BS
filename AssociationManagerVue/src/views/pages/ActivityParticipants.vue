@@ -3,10 +3,10 @@
         <el-card shadow="never">
             <div slot="header">
                 <el-form :inline="true" :model="qryForm">
-                    <el-form-item v-if="userType == 1 || userType == 0">
+                    <el-form-item v-if="true">
                         <el-input v-model="qryForm.userId" placeholder="输入申请人ID…" autocomplete="off"></el-input>
                     </el-form-item>
-                    <el-form-item v-if="userType == 2">
+                    <el-form-item v-if="true">
                         <el-input v-model="qryForm.activityId" placeholder="输入活动ID…" autocomplete="off"></el-input>
                     </el-form-item>
                     <el-form-item>

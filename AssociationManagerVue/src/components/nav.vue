@@ -86,12 +86,14 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
-                        <el-form-item label="用户年龄">
-                            <el-input
-                                v-model="userForm.age"
-                                placeholder="请输入用户年龄…"
-                                autocomplete="off"
-                            ></el-input>
+                        <el-form-item label="出生日期">
+                            <el-date-picker
+                                style="width: 100%"
+                                v-model="userForm.birthday"
+                                type="date"
+                                value-format="yyyy-MM-dd"
+                                placeholder="请选择出生日期…"
+                            ></el-date-picker>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -264,7 +266,7 @@ export default {
                 passWord: "",
                 name: "",
                 gender: "",
-                age: "",
+                birthday: "",
                 phone: "",
                 address: "",
             },
@@ -316,43 +318,43 @@ export default {
             };
         },
         showUpdInfoWin() {
-            getLoginUser(this.$store.state.token).then((resp) => {
-                this.initUserForm();
-                this.userForm = resp.data;
-                this.showUpdInfoFlag = true;
-            });
+            // 模拟数据展示
+            this.initUserForm();
+            this.userForm = {
+                id: "U2023001",
+                userName: "admin",
+                passWord: "mockpassword",
+                name: "张三 (管理员)",
+                gender: "男",
+                birthday: "2002-05-15",
+                phone: "13800138000",
+                address: "计算机学院软件工程专业1班"
+            };
+            this.showUpdInfoFlag = true;
         },
         showUpdPwdWin() {
             this.initUserPwd();
             this.showUpdPwdFlag = true;
         },
         updInfo() {
-            this.userForm.token = this.$store.state.token;
-            updLoginUserInfo(this.userForm).then((resp) => {
-                this.$message({
-                    message: resp.msg,
-                    type: "success",
-                });
-
-                this.showUpdInfoFlag = false;
-                this.initUserForm();
+            // 模拟提交
+            this.$message({
+                message: "修改信息成功！(模拟)",
+                type: "success",
             });
+            this.showUpdInfoFlag = false;
+            this.initUserForm();
         },
         updPwd(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    updLoginUserPwd(
-                        this.$store.state.token,
-                        this.userPwd.newPwd
-                    ).then((resp) => {
-                        this.$message({
-                            message: resp.msg,
-                            type: "success",
-                        });
-
-                        this.showUpdPwdFlag = false;
-                        this.initUserPwd();
+                    // 模拟提交
+                    this.$message({
+                        message: "修改密码成功！(模拟)",
+                        type: "success",
                     });
+                    this.showUpdPwdFlag = false;
+                    this.initUserPwd();
                 } else {
                     return false;
                 }

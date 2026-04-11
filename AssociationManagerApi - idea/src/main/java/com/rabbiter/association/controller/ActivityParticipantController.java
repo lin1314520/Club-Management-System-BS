@@ -84,7 +84,7 @@ public class ActivityParticipantController extends BaseController {
     }
 
     @PostMapping("/apply")
-    public R apply(Long activityId, Long userId) {
+    public R apply(Long activityId, Long userId, String applyReason) {
         QueryWrapper<ActivityParticipant> qw = new QueryWrapper<>();
         qw.eq("activity_id", activityId).eq("user_id", userId);
         if (activityParticipantService.count(qw) > 0) {
@@ -94,6 +94,7 @@ public class ActivityParticipantController extends BaseController {
         ActivityParticipant pt = new ActivityParticipant();
         pt.setActivityId(activityId);
         pt.setUserId(userId);
+        pt.setApplyReason(applyReason);
         pt.setAuditStatus(0); // 待审核
         pt.setApplyTime(new java.util.Date());
         activityParticipantService.save(pt);

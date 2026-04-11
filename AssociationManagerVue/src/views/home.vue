@@ -38,9 +38,8 @@ export default {
     },
     methods: {},
     mounted() {
-        getLoginUser(this.$store.state.token).then((resp) => {
-            this.$store.state.user = resp.data;
-        });
+        // 模拟测试数据
+        this.$store.state.user = { id: "U2023001", type: 0, username: "admin", name: "张三 (管理员)", gender: "男", age: 22, phone: "13800138000", address: "计算机学院软件工程专业1班" };
     },
     components: {
         Nav,

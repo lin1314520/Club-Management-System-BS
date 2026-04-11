@@ -40,7 +40,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="userType == 1" slot="header">
+            <div v-if="true" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -150,7 +150,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="userType == 1"
+                        v-if="true"
                         align="center"
                         label="进度控制"
                         fixed="right"
@@ -164,7 +164,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="userType == 0"
+                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"

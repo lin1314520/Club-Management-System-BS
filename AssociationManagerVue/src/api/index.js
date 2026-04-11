@@ -86,11 +86,19 @@ export function getPageMembers(pageIndex, pageSize, clubId, status) {
 		params: { pageIndex, pageSize, clubId, status }
 	});
 }
-export function applyJoinClub(clubId, userId) {
-	return http.post('/clubMember/apply', { clubId, userId });
+export function applyJoinClub(clubId, userId, joinReason) {
+	return http.post('/joinClubApplication/apply', { clubId, userId, joinReason });
 }
 export function auditClubMember(id, status) {
 	return http.post('/clubMember/audit', { id, status });
+}
+export function getPageJoinClubApplications(pageIndex, pageSize, clubId, userId) {
+	return http.get('/joinClubApplication/list', {
+		params: { page: pageIndex, limit: pageSize, clubId, userId }
+	});
+}
+export function auditJoinClubApplication(joinAppId, auditStatus, feedback) {
+	return http.post('/joinClubApplication/audit', { joinAppId, auditStatus, feedback });
 }
 export function quitClub(clubId, userId) {
 	return http.post('/clubMember/quit', { clubId, userId });
@@ -193,17 +201,33 @@ export function getPageActivityParticipants(pageIndex, pageSize, activityId, use
 		params: { pageIndex, pageSize, activityId, userId, auditStatus }
 	});
 }
-export function applyJoinActivity(activityId, userId) {
-	return http.post('/activityParticipant/apply', { activityId, userId });
+export function applyJoinActivity(activityId, userId, applyReason) {
+	return http.post('/activityParticipant/apply', { activityId, userId, applyReason });
 }
 export function auditActivityParticipant(id, auditStatus) {
 	return http.post('/activityParticipant/audit', { id, auditStatus });
 }
-export function signInActivity(id) {
-	return http.post('/activityParticipant/signIn', { id });
+export function auditActivityParticipantWithFeedback(id, auditStatus, feedback) {
+	return http.post('/activityParticipant/audit', { id, auditStatus, feedback });
 }
-export function signOutActivity(id) {
-	return http.post('/activityParticipant/signOut', { id });
+export function launchActivitySignIn(activityId) {
+	return http.post('/activitySignIn/launch', { activityId });
+}
+export function finishActivitySignIn(signInId) {
+	return http.post('/activitySignIn/finish', { signInId });
+}
+export function punchCardSignIn(signInId, userId) {
+	return http.post('/activitySignIn/punchCard', { signInId, userId });
+}
+
+export function launchActivitySignOut(activityId) {
+	return http.post('/activitySignOut/launch', { activityId });
+}
+export function finishActivitySignOut(signOutId) {
+	return http.post('/activitySignOut/finish', { signOutId });
+}
+export function punchCardSignOut(signOutId, userId) {
+	return http.post('/activitySignOut/punchCard', { signOutId, userId });
 }
 export function delActivityParticipant(id) {
 	return http.post('/activityParticipant/del', { id });

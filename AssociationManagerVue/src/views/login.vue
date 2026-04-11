@@ -174,13 +174,12 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    login(this.loginForm)
-                        .then((res) => {
-                            this.$store.commit("setToken", res.data);
-                            sessionStorage.setItem("token", res.data);
-                            initMenu(this.$router, this.$store);
-                            this.$router.push("/index");
-                        })
+                    // 模拟测试数据环境：直接跳过真实登录接口调用，方便截图
+                    this.$store.commit("setToken", "mock_token_for_test");
+                    sessionStorage.setItem("token", "mock_token_for_test");
+                    sessionStorage.setItem("mock_login_type", this.loginForm.type); // 记录当前选择的身份类型
+                    initMenu(this.$router, this.$store);
+                    this.$router.push("/index");
                 } else {
                     return false;
                 }

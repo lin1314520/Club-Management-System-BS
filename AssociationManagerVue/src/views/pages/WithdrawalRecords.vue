@@ -13,7 +13,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="warning" icon="el-icon-search" @click="getPageLikeInfo()"></el-button>
-                        <el-button v-if="userType == 1" type="primary" icon="el-icon-plus" @click="showAddWin()"></el-button>
+                        <el-button v-if="true" type="primary" icon="el-icon-plus" @click="showAddWin()"></el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -36,9 +36,9 @@
                         </template>
                     </el-table-column>
                     
-                    <el-table-column v-if="userType == 0 || userType == 1" align="center" label="操作处理" width="160" fixed="right">
+                    <el-table-column v-if="true" align="center" label="操作处理" width="160" fixed="right">
                         <template slot-scope="scope">
-                            <template v-if="userType == 0 || userType == 1">
+                            <template v-if="true">
                                 <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">删除</el-button>
                             </template>
                         </template>

@@ -72,7 +72,7 @@ public class JoinClubApplicationController {
      */
     @PostMapping("/audit")
     @Transactional
-    public R audit(Long joinAppId, String auditStatus) {
+    public R audit(Long joinAppId, String auditStatus, String feedback) {
         JoinClubApplication app = joinClubApplicationService.getById(joinAppId);
         if (app == null) return R.error("申请记录不存在");
 
@@ -82,6 +82,9 @@ public class JoinClubApplicationController {
 
         app.setAuditStatus(auditStatus);
         app.setAuditTime(new Date());
+        if (feedback != null) {
+            app.setFeedback(feedback);
+        }
         joinClubApplicationService.updateById(app);
 
         // 如果审批通过 (1)，则向社团成员表插入一条正式记录

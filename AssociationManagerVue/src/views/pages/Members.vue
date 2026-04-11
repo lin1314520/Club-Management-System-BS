@@ -32,7 +32,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="userType == 0 || userType == 1" slot="header">
+            <div v-if="true" slot="header">
                 <!-- 可以加其他操作按钮 -->
             </div>
             <div>

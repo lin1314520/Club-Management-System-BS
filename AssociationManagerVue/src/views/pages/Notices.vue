@@ -34,7 +34,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="userType != 2" slot="header">
+            <div v-if="true" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -92,7 +92,7 @@
                         label="通知详情"
                     ></el-table-column>
                     <el-table-column
-                        v-if="userType == 0"
+                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"
@@ -106,7 +106,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="userType == 1"
+                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"
@@ -147,7 +147,7 @@
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
-                <el-form-item v-if="userType == 1" label="发布社团">
+                <el-form-item v-if="true" label="发布社团">
                     <el-select
                         style="width: 100%"
                         v-model="noticesForm.clubId"
