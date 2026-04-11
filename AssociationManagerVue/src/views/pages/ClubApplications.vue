@@ -25,10 +25,9 @@
                 <el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
                     element-loading-background="rgba(0, 0, 0, 0.8)" :data="pageInfos" border>
                     <el-table-column align="center" type="index" label="序号"></el-table-column>
-                    <el-table-column align="center" prop="clubName" label="申请社团名称"></el-table-column>
                     <el-table-column align="center" prop="typeName" label="社团类型"></el-table-column>
                     <el-table-column align="center" prop="realName" label="申请人姓名"></el-table-column>
-                    <el-table-column align="center" prop="description" label="申请理由/简介"></el-table-column>
+                    <el-table-column align="center" prop="description" label="申请详情(含名称)"></el-table-column>
                     <el-table-column align="center" label="申请时间">
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.applyTime) }}
@@ -36,20 +35,20 @@
                     </el-table-column>
                     <el-table-column align="center" label="状态">
                         <template slot-scope="scope">
-                            <el-tag type="warning" v-if="scope.row.status == 0">审批中</el-tag>
-                            <el-tag type="success" v-if="scope.row.status == 1">已通过</el-tag>
-                            <el-tag type="danger" v-if="scope.row.status == 2">已拒绝</el-tag>
-                            <el-tag type="info" v-if="scope.row.status == 3">已撤销</el-tag>
+                            <el-tag type="warning" v-if="scope.row.auditStatus == 0">审批中</el-tag>
+                            <el-tag type="success" v-if="scope.row.auditStatus == 1">已通过</el-tag>
+                            <el-tag type="danger" v-if="scope.row.auditStatus == 2">已拒绝</el-tag>
+                            <el-tag type="info" v-if="scope.row.auditStatus == 3">已撤销</el-tag>
                         </template>
                     </el-table-column>
                     
                     <el-table-column v-if="true" align="center" label="操作处理" width="150" fixed="right">
                         <template slot-scope="scope">
                             <!-- 管理员操作 -->
-                            <el-button v-if="userType == 0 && scope.row.status == 0" type="success" size="mini" @click="audit(scope.row.id, 1)">通过</el-button>
-                            <el-button v-if="userType == 0 && scope.row.status == 0" type="danger" size="mini" @click="audit(scope.row.id, 2)">拒绝</el-button>
+                            <el-button v-if="userType == 0 && scope.row.auditStatus == 0" type="success" size="mini" @click="audit(scope.row.id, 1)">通过</el-button>
+                            <el-button v-if="userType == 0 && scope.row.auditStatus == 0" type="danger" size="mini" @click="audit(scope.row.id, 2)">拒绝</el-button>
                             <!-- 普通用户操作 -->
-                            <el-button v-if="userType == 2 && scope.row.status == 0" type="danger" size="mini" @click="cancelApp(scope.row.id)">撤销</el-button>
+                            <el-button v-if="userType == 2 && scope.row.auditStatus == 0" type="danger" size="mini" @click="cancelApp(scope.row.id)">撤销</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -151,7 +150,13 @@ export default {
             this.showAddFlag = true;
         },
         addInfo() {
-            addClubApplication(this.appForm).then((resp) => {
+            let desc = "【申请社团名称】" + this.appForm.clubName + "\n" + this.appForm.description;
+            let data = {
+                typeId: this.appForm.typeId,
+                description: desc,
+                userId: this.appForm.userId
+            };
+            addClubApplication(data).then((resp) => {
                 this.$message.success(resp.msg);
                 this.getPageInfo(1, this.pageSize);
                 this.showAddFlag = false;

@@ -19,15 +19,6 @@
                         ></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-select v-model="qryForm.status" placeholder="请选择状态">
-                            <el-option label="查看全部" value=""></el-option>
-                            <el-option label="申请中" :value="0"></el-option>
-                            <el-option label="已加入" :value="1"></el-option>
-                            <el-option label="已拒绝" :value="2"></el-option>
-                            <el-option label="已退出" :value="3"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item>
                         <el-button type="primary" @click="getPageLikeInfo()" style="font-size: 18px">
                              搜索</el-button>
                     </el-form-item>
@@ -66,8 +57,8 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
-                        prop="phone"
-                        label="申请人电话"
+                        prop="joinReason"
+                        label="入社原因"
                     ></el-table-column>
                     <el-table-column
                         align="center"
@@ -78,7 +69,47 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="true"
+                        align="center"
+                        label="审批状态"
+                        width="120"
+                    >
+                        <template slot-scope="scope">
+                            <el-tag
+                                effect="plain"
+                                type="success"
+                                v-if="scope.row.auditStatus == '1'"
+                                >已通过</el-tag
+                            >
+                            <el-tag
+                                effect="plain"
+                                type="danger"
+                                v-if="scope.row.auditStatus == '2'"
+                                >已驳回</el-tag
+                            >
+                            <el-tag
+                                effect="plain"
+                                type="info"
+                                v-if="scope.row.auditStatus == '0'"
+                                >审核中</el-tag
+                            >
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        align="center"
+                        prop="feedback"
+                        label="审批反馈"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
+                        label="审批时间"
+                        width="160"
+                    >
+                        <template slot-scope="scope">
+                            {{ formatDate(scope.row.auditTime) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        v-if="userType == 1 || userType == 0"
                         align="center"
                         label="操作处理"
                         fixed="right"
@@ -86,73 +117,18 @@
                     >
                         <template slot-scope="scope">
                             <el-button
-                                v-if="scope.row.status == 0"
+                                v-if="scope.row.auditStatus == '0'"
                                 type="primary"
-                                @click="updInfo(scope.row, 1)"
+                                @click="updInfo(scope.row, '1')"
                             >
                                 通过</el-button
                             >
                             <el-button
-                                v-if="scope.row.status == 0"
+                                v-if="scope.row.auditStatus == '0'"
                                 type="danger"
-                                @click="updInfo(scope.row, 2)"
+                                @click="updInfo(scope.row, '2')"
                             >
                                 驳回</el-button
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="success"
-                                v-if="scope.row.status == 1"
-                                >已通过</el-tag
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="danger"
-                                v-if="scope.row.status == 2"
-                                >已驳回</el-tag
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="info"
-                                v-if="scope.row.status == 3"
-                                >已退出</el-tag
-                            >
-                        </template>
-                    </el-table-column>
-                    <el-table-column v-else align="center" label="申请状态">
-                        <template slot-scope="scope">
-                            <el-tag
-                                effect="plain"
-                                type="warning"
-                                v-if="scope.row.status == 0"
-                                >审核中</el-tag
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="success"
-                                v-if="scope.row.status == 1"
-                                >已通过</el-tag
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="danger"
-                                v-if="scope.row.status == 2"
-                                >已驳回</el-tag
-                            >
-                            <el-tag
-                                effect="plain"
-                                type="info"
-                                v-if="scope.row.status == 3"
-                                >已退出</el-tag
-                            >
-                            <el-button
-                                v-if="scope.row.status == 1"
-                                type="danger"
-                                size="mini"
-                                style="margin-left: 10px;"
-                                @click="quitInfo(scope.row)"
-                            >
-                                退出</el-button
                             >
                         </template>
                     </el-table-column>
@@ -178,7 +154,7 @@
 </style>
 
 <script>
-import { getLoginUser, getPageMembers, auditClubMember, quitClub } from "../../api";
+import { getLoginUser, getPageJoinClubApplications, auditJoinClubApplication } from "../../api";
 
 export default {
     data() {
@@ -192,7 +168,6 @@ export default {
             loading: true,
             qryForm: {
                 clubId: "",
-                status: "",
             },
         };
     },
@@ -209,34 +184,19 @@ export default {
             return `${y}-${m}-${d} ${h}:${min}:${s}`;
         },
         getPageInfo(pageIndex, pageSize) {
-            getPageMembers(pageIndex, pageSize, this.qryForm.clubId, this.qryForm.status).then(
-                (resp) => {
-                    this.pageInfos = resp.data.data;
-                    this.pageIndex = resp.data.pageIndex;
-                    this.pageSize = resp.data.pageSize;
-                    this.pageTotal = resp.data.pageTotal;
-                    this.totalInfo = resp.data.count;
-
-                    this.loading = false;
-                    
-                }
-            );
+            const userId = this.userType == 2 && this.$store.state.userInfo ? this.$store.state.userInfo.id : null;
+            getPageJoinClubApplications(pageIndex, pageSize, this.qryForm.clubId, userId).then((resp) => {
+                const total = resp.data.total || 0;
+                this.pageInfos = resp.data.data || [];
+                this.pageIndex = pageIndex;
+                this.pageSize = pageSize;
+                this.totalInfo = total;
+                this.pageTotal = Math.ceil(total / pageSize);
+                this.loading = false;
+            });
         },
         getPageLikeInfo() {
-            getPageMembers(
-                1,
-                this.pageSize,
-                this.qryForm.clubId,
-                this.qryForm.status
-            ).then((resp) => {
-                this.pageInfos = resp.data.data;
-                this.pageIndex = resp.data.pageIndex;
-                this.pageSize = resp.data.pageSize;
-                this.totalInfo = resp.data.count;
-                this.pageTotal = resp.data.pageTotal;
-                this.loading = false;
-                
-            });
+            this.getPageInfo(1, this.pageSize);
         },
         handleSizeChange(pageSize) {
             this.getPageInfo(
@@ -251,36 +211,26 @@ export default {
             );
         },
         updInfo(data, status) {
-            auditClubMember(data.id, status).then((resp) => {
-                this.$message({
-                    message: resp.msg,
-                    type: "success",
-                });
-
-                this.getPageInfo(1, this.pageSize);
-            });
-        },
-        quitInfo(data) {
-            this.$confirm("确认退出该社团吗?", "提示", {
+            this.$prompt("请输入审批反馈(可选)", "审批", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
-                type: "warning",
-            }).then(() => {
-                quitClub(data.clubId, data.userId).then((resp) => {
+                inputPlaceholder: "例如：欢迎加入 / 抱歉，名额已满…",
+            }).then(({ value }) => {
+                auditJoinClubApplication(data.joinAppId, status, value).then((resp) => {
                     this.$message({
                         message: resp.msg,
                         type: "success",
                     });
-                    this.getPageInfo(1, this.pageSize);
+                    this.getPageInfo(this.pageIndex, this.pageSize);
                 });
-            });
-        }
+            }).catch(() => {});
+        },
     },
     mounted() {
-        this.getPageInfo(1, this.pageSize);
-
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
+            this.$store.state.userInfo = resp.data;
+            this.getPageInfo(1, this.pageSize);
         });
     },
 };

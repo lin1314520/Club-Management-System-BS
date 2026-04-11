@@ -396,7 +396,9 @@ import {
     getAllTeamList,
     applyJoinActivity,
     getPageActivityParticipants,
-    addNotices
+    addNotices,
+    launchActivitySignIn,
+    launchActivitySignOut
 } from "../../api";
 
 export default {
@@ -458,7 +460,33 @@ export default {
             this.$confirm(`确认要对活动【${row.title}】发起${statusMap[newStatus]}吗?`, "提示", {
                 type: "warning"
             }).then(() => {
-                updActivities({ id: row.id, status: newStatus }).then(resp => {
+                if (newStatus == 1) {
+                    launchActivitySignIn(row.id).then((r) => {
+                        if (r.code != 0) {
+                            this.$message.warning(r.msg);
+                            return;
+                        }
+                        updActivities({ id: row.id, status: newStatus }).then(() => {
+                            this.$alert(`签到已发起，签到码：${r.data}`, "签到码", { confirmButtonText: "确定" });
+                            this.getPageInfo(this.pageIndex, this.pageSize);
+                        });
+                    });
+                    return;
+                }
+                if (newStatus == 2) {
+                    launchActivitySignOut(row.id).then((r) => {
+                        if (r.code != 0) {
+                            this.$message.warning(r.msg);
+                            return;
+                        }
+                        updActivities({ id: row.id, status: newStatus }).then(() => {
+                            this.$alert(`签退已发起，签退码：${r.data}`, "签退码", { confirmButtonText: "确定" });
+                            this.getPageInfo(this.pageIndex, this.pageSize);
+                        });
+                    });
+                    return;
+                }
+                updActivities({ id: row.id, status: newStatus }).then(() => {
                     this.$message.success("操作成功");
                     this.getPageInfo(this.pageIndex, this.pageSize);
                 });
@@ -566,12 +594,14 @@ export default {
             this.showAddFlag = true;
         },
         active(id) {
-            this.$confirm("确认报名该活动吗?", "提示", {
+            this.$prompt("请输入报名理由：", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
-                type: "warning",
-            }).then(() => {
-                applyJoinActivity(id, this.$store.state.userInfo.id).then((resp) => {
+                inputPattern: /.+/,
+                inputErrorMessage: '报名理由不能为空'
+            })
+            .then(({ value }) => {
+                applyJoinActivity(id, this.$store.state.userInfo.id, value).then((resp) => {
                     if (resp.code == 0) {
                         this.$message({
                             message: "报名成功，等待审核",
@@ -584,6 +614,12 @@ export default {
                             type: "warning",
                         });
                     }
+                });
+            })
+            .catch(() => {
+                this.$message({
+                    type: "info",
+                    message: "已取消报名",
                 });
             });
         },
