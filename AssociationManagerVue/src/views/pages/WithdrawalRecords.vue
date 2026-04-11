@@ -51,7 +51,7 @@
             </div>
         </el-card>
 
-        <el-dialog title="发起提现" width="600px" :visible.sync="showAddFlag">
+        <el-dialog title="记录提现" width="600px" :visible.sync="showAddFlag">
             <el-form label-width="90px" :model="wrForm">
                 <el-form-item label="所属社团">
                     <el-select style="width: 100%" v-model="wrForm.clubId" placeholder="请选择您的社团">
@@ -67,7 +67,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showAddFlag = false" style="font-size: 18px"> 取 消</el-button>
-                <el-button type="primary" @click="addInfo()" style="font-size: 18px"> 发 起</el-button>
+                <el-button type="primary" @click="addInfo()" style="font-size: 18px"> 提 交</el-button>
             </div>
         </el-dialog>
     </div>

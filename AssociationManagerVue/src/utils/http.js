@@ -100,16 +100,26 @@ const generateMockList = (url) => {
             obj.noticeTitle = obj.title;
         }
         if (url.includes('withdrawalRecord')) {
-            obj.reason = "购买活动物资及奖品";
+            obj.reason = ["购买活动物资及奖品", "场地租赁费用", "宣传海报打印费", "迎新晚会道具购买", "嘉宾讲座邀请费"][i-1];
             obj.applicantName = "申请人" + i;
         }
         if (url.includes('activityFeedback')) {
-            obj.content = "这次活动办得非常好，学到了很多知识！";
-            obj.replyContent = "收到反馈，感谢参与！";
+            obj.content = ["这次活动办得非常好，学到了很多知识！", "希望下次活动时间能长一点，意犹未尽。", "感谢社长和干事们的辛苦组织，活动很圆满！", "讲座内容非常实用，对我的学习有很大帮助。", "场地稍微有点小，不过总体氛围很棒！"][i-1];
+            obj.replyContent = i % 2 === 0 ? "" : "收到反馈，感谢您的支持与参与！我们会继续努力！"; // 偶数没有回复
+            obj.replyTime = i % 2 === 0 ? "" : "2026-04-12 14:30:00";
+        }
+        if (url.includes('activityTweet')) {
+            obj.title = ["【精彩回顾】迎新晚会圆满落幕！", "【招新】快来加入我们的大家庭吧！", "【预告】下周技术分享沙龙，不容错过", "【喜报】我社在校级比赛中荣获佳绩", "【总结】本学期第一次全体大会纪要"][i-1];
+            obj.content = "这是一篇非常详细的活动推文内容。在这里我们记录了活动的点点滴滴，分享了参与者的感受，以及未来的展望...";
+            obj.publisherName = ["张三", "李四", "王五", "赵六", "钱七"][i-1];
         }
         if (url.includes('paymentNotice') || url.includes('paymentRecord')) {
             obj.title = ["春季会费", "秋季会费", "活动赞助", "场地费", "器材费"][i-1];
             obj.payTime = "2026-04-11 12:00:00";
+        }
+        if (url.includes('signInRecord') || url.includes('signOutRecord')) {
+            obj.status = i % 2 === 0 ? 1 : 0; // 模拟有的签到/签退了，有的没有
+            obj.signTime = obj.status === 1 ? "2026-04-11 08:30:00" : "";
         }
         if (url.includes('sysUser')) {
             obj.type = i % 3; // 0, 1, 2

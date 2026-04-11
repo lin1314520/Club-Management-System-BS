@@ -92,7 +92,7 @@ export const adminMenus = {
         },
         {
             path: '/withdrawalRecords',
-            name: '提现审批管理',
+            name: '提现记录管理',
             icon: "iconfont icon-r-yes",
             component: require("../views/pages/WithdrawalRecords.vue").default
         }
@@ -260,7 +260,7 @@ export const manMenus = {
         },
         {
             path: '/withdrawalRecords',
-            name: '社团提现申请',
+            name: '提现记录查看',
             icon: "iconfont icon-r-shield",
             component: require("../views/pages/WithdrawalRecords.vue").default
         },
