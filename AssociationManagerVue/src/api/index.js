@@ -264,6 +264,9 @@ export function getPageActivityFeedbacks(pageIndex, pageSize, activityId, userId
 export function addActivityFeedback(params) {
 	return http.post('/activityFeedback/add', params);
 }
+export function replyActivityFeedback(params) {
+	return http.post('/activityFeedback/reply', params);
+}
 export function delActivityFeedback(id) {
 	return http.post('/activityFeedback/del', { id });
 }

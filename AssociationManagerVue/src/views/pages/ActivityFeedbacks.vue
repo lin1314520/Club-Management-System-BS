@@ -23,14 +23,27 @@
                     <el-table-column align="center" prop="userName" label="提交人账号"></el-table-column>
                     <el-table-column align="center" prop="realName" label="提交人姓名"></el-table-column>
                     <el-table-column align="center" prop="content" label="心得内容" show-overflow-tooltip></el-table-column>
-                    <el-table-column align="center" label="提交时间">
+                    <el-table-column align="center" label="提交时间" width="160">
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.createTime) }}
                         </template>
                     </el-table-column>
-                    
-                    <el-table-column v-if="true" align="center" label="操作处理" width="120" fixed="right">
+                    <el-table-column align="center" prop="replyContent" label="回复内容" show-overflow-tooltip>
                         <template slot-scope="scope">
+                            <span v-if="scope.row.replyContent">{{ scope.row.replyContent }}</span>
+                            <el-tag v-else type="info" size="mini">暂无回复</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" label="回复时间" width="160">
+                        <template slot-scope="scope">
+                            <span v-if="scope.row.replyTime">{{ formatDate(scope.row.replyTime) }}</span>
+                            <span v-else>-</span>
+                        </template>
+                    </el-table-column>
+                    
+                    <el-table-column v-if="true" align="center" label="操作处理" width="160" fixed="right">
+                        <template slot-scope="scope">
+                            <el-button v-if="userType == 0 || userType == 1" type="primary" size="mini" @click="showReplyWin(scope.row)">回复</el-button>
                             <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">删除</el-button>
                         </template>
                     </el-table-column>
@@ -56,11 +69,24 @@
                 <el-button type="primary" @click="addInfo()" style="font-size: 18px"> 提 交</el-button>
             </div>
         </el-dialog>
+
+        <!-- 回复心得弹窗 -->
+        <el-dialog title="回复心得体会" width="600px" :visible.sync="showReplyFlag">
+            <el-form label-width="90px" :model="replyForm">
+                <el-form-item label="回复内容">
+                    <el-input v-model="replyForm.replyContent" type="textarea" rows="6" placeholder="请输入回复内容…" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showReplyFlag = false" style="font-size: 18px"> 取 消</el-button>
+                <el-button type="primary" @click="submitReply()" style="font-size: 18px"> 提 交</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-import { getLoginUser, getPageActivityFeedbacks, addActivityFeedback, delActivityFeedback } from "../../api";
+import { getLoginUser, getPageActivityFeedbacks, addActivityFeedback, delActivityFeedback, replyActivityFeedback } from "../../api";
 
 export default {
     data() {
@@ -73,6 +99,7 @@ export default {
             totalInfo: 0,
             loading: true,
             showAddFlag: false,
+            showReplyFlag: false,
             qryForm: {
                 activityId: "",
                 userId: "",
@@ -81,6 +108,10 @@ export default {
                 activityId: "",
                 userId: "",
                 content: ""
+            },
+            replyForm: {
+                feedbackId: "",
+                replyContent: ""
             }
         };
     },
@@ -129,6 +160,24 @@ export default {
                 this.$message.success(resp.msg);
                 this.getPageInfo(1, this.pageSize);
                 this.showAddFlag = false;
+            });
+        },
+        showReplyWin(row) {
+            this.replyForm = {
+                feedbackId: row.id,
+                replyContent: row.replyContent || ""
+            };
+            this.showReplyFlag = true;
+        },
+        submitReply() {
+            if(!this.replyForm.replyContent) {
+                this.$message.warning("请输入回复内容");
+                return;
+            }
+            replyActivityFeedback(this.replyForm).then((resp) => {
+                this.$message.success(resp.msg);
+                this.getPageInfo(this.pageIndex, this.pageSize);
+                this.showReplyFlag = false;
             });
         },
         delInfo(id) {

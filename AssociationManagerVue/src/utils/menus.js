@@ -31,6 +31,18 @@ export const adminMenus = {
             component: require("../views/pages/Teams.vue").default
         },
         {
+            path: '/members',
+            name: '社团成员管理',
+            icon: "iconfont icon-r-user2",
+            component: require("../views/pages/Members.vue").default
+        },
+        {
+            path: '/applyLogs',
+            name: '入社申请处理',
+            icon: "iconfont icon-r-add",
+            component: require("../views/pages/ApplyLogs.vue").default
+        },
+        {
             path: '/clubApplications',
             name: '建社审批管理',
             icon: "iconfont icon-r-add",
@@ -59,6 +71,12 @@ export const adminMenus = {
             name: '签退记录查看',
             icon: "iconfont icon-r-yes",
             component: require("../views/pages/SignOutRecords.vue").default
+        },
+        {
+            path: '/activityFeedbacks',
+            name: '活动反馈管理',
+            icon: "iconfont icon-r-edit",
+            component: require("../views/pages/ActivityFeedbacks.vue").default
         },
         {
             path: '/notices',
@@ -92,6 +110,12 @@ export const memYMenus = {
             name: '首页',
             icon: "iconfont icon-r-home",
             component: require("../views/pages/Index.vue").default
+        },
+        {
+            path: '/teamTypes',
+            name: '社团类型浏览',
+            icon: "iconfont icon-r-list",
+            component: require("../views/pages/TeamTypes.vue").default
         },
         {
             path: '/applyLogs',
