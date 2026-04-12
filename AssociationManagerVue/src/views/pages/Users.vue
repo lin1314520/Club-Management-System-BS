@@ -120,7 +120,7 @@
                         align="center"
                         label="操作处理"
                         fixed="right"
-                        width="300"
+                        width="240"
                     >
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
@@ -134,13 +134,6 @@
                                     <el-dropdown-item v-if="scope.row.type !== 2" command="2">设为普通用户</el-dropdown-item>
                                   </el-dropdown-menu>
                                 </el-dropdown>
-                                <el-button
-                                    type="primary"
-                                    @click="showUpdWin(scope.row)"
-                                    style="font-size: 14px"
-                                    >
-                                    编辑</el-button
-                                >
                                 <el-button
                                     type="danger"
                                     @click="delInfo(scope.row.id, scope.row.type)"

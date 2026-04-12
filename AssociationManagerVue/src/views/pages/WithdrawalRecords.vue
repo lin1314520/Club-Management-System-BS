@@ -1,5 +1,13 @@
 <template>
     <div class="info-wrapper">
+        <el-alert
+            v-if="userType === 1 && myTeamInfo"
+            :title="`当前社团 (${myTeamInfo.clubName}) 账户可用余额: ${myTeamInfo.balance || 0} 元`"
+            type="success"
+            :closable="false"
+            style="margin-bottom: 15px;"
+        >
+        </el-alert>
         <el-card shadow="never">
             <div slot="header">
                 <el-form :inline="true" :model="qryForm">
@@ -55,7 +63,7 @@
 
         <el-dialog title="记录提现" width="600px" :visible.sync="showAddFlag">
             <el-form label-width="90px" :model="wrForm">
-                <el-form-item label="所属社团">
+                <el-form-item label="所属社团" v-if="userType !== 1">
                     <el-select style="width: 100%" v-model="wrForm.clubId" placeholder="请选择您的社团">
                         <el-option v-for="(item, index) in teams" :key="index" :label="item.clubName" :value="item.id"></el-option>
                     </el-select>
@@ -90,6 +98,7 @@ export default {
             loading: true,
             showAddFlag: false,
             teams: [],
+            myTeamInfo: null,
             qryForm: {
                 clubId: "",
                 status: "",
@@ -138,9 +147,15 @@ export default {
                 amount: "",
                 reason: ""
             };
+            if (this.userType === 1 && this.myTeamInfo) {
+                this.wrForm.clubId = this.myTeamInfo.id;
+            }
             this.showAddFlag = true;
         },
         addInfo() {
+            if (this.userType === 1 && this.myTeamInfo) {
+                this.wrForm.clubId = this.myTeamInfo.id;
+            }
             const params = {
                 ...this.wrForm,
                 applicantId: this.$store.state.userInfo.id
@@ -164,12 +179,21 @@ export default {
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
             this.$store.state.userInfo = resp.data;
-            this.getPageInfo(1, this.pageSize);
-            
-            if (this.userType == 1 || this.userType == 0) {
+            if (this.userType === 1) {
+                getAllTeamList().then(teamResp => {
+                    this.teams = teamResp.data;
+                    let myTeam = teamResp.data.find(t => t.managerId === this.$store.state.userInfo.id || t.managerName === this.$store.state.userInfo.realName);
+                    if (myTeam) {
+                        this.myTeamInfo = myTeam;
+                        this.qryForm.clubId = myTeam.id;
+                    }
+                    this.getPageInfo(1, this.pageSize);
+                });
+            } else {
                 getAllTeamList().then(resp => {
                     this.teams = resp.data;
                 });
+                this.getPageInfo(1, this.pageSize);
             }
         });
     }

@@ -11,7 +11,7 @@
             </div>
             <div>
                 <el-form :inline="true" :model="qryForm">
-                    <el-form-item>
+                    <el-form-item v-if="userType !== 1">
                         <el-input
                             v-model="qryForm.clubId"
                             placeholder="输入社团ID…"
@@ -79,14 +79,6 @@
                             <span v-if="scope.row.memberRole == 0">普通成员</span>
                         </template>
                     </el-table-column>
-                    <el-table-column align="center" label="成员状态">
-                        <template slot-scope="scope">
-                            <span v-if="scope.row.status == 0" style="color: orange">申请中</span>
-                            <span v-if="scope.row.status == 1" style="color: green">已加入</span>
-                            <span v-if="scope.row.status == 2" style="color: red">已拒绝</span>
-                            <span v-if="scope.row.status == 3" style="color: gray">已退出</span>
-                        </template>
-                    </el-table-column>
                     <el-table-column
                         align="center"
                         label="申请时间"
@@ -112,12 +104,12 @@
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <el-button
-                                type="danger"
-                                style="font-size: 14px"
-                                @click="delInfo(scope.row.id)"
+                                    v-if="userType !== 1 || scope.row.userId !== $store.state.userInfo.id"
+                                    type="danger"
+                                    style="font-size: 14px"
+                                    @click="delInfo(scope.row.id)"
                                 >
-                                删除</el-button
-                            >
+                                删除</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -242,9 +234,23 @@ export default {
         },
     },
     mounted() {
-        this.getPageInfo(1, this.pageSize);
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
+            this.$store.state.userInfo = resp.data;
+            if (this.userType === 1) {
+                // 如果是社长，尝试获取并绑定自己的社团ID
+                import("../../api").then(api => {
+                    api.getAllTeamList().then(teamResp => {
+                        let myTeam = teamResp.data.find(t => t.managerId === this.$store.state.userInfo.id || t.managerName === this.$store.state.userInfo.realName);
+                        if (myTeam) {
+                            this.qryForm.clubId = myTeam.id;
+                        }
+                        this.getPageInfo(1, this.pageSize);
+                    });
+                });
+            } else {
+                this.getPageInfo(1, this.pageSize);
+            }
         });
     },
 };

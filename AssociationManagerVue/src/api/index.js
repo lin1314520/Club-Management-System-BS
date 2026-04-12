@@ -250,7 +250,12 @@ export function getPageActivityTweets(pageIndex, pageSize, activityId, title) {
 		params: { pageIndex, pageSize, activityId, title }
 	});
 }
-
+export function addActivityTweet(params) {
+	return http.post('/activityTweet/add', params);
+}
+export function updActivityTweet(params) {
+	return http.post('/activityTweet/upd', params);
+}
 export function delActivityTweet(id) {
 	return http.post('/activityTweet/del', { id });
 }

@@ -12,11 +12,19 @@
             <div>
                 <el-form :inline="true" :model="qryForm">
                     <el-form-item>
-                        <el-input
+                        <el-select
                             v-model="qryForm.clubId"
-                            placeholder="输入社团ID…"
-                            autocomplete="off"
-                        ></el-input>
+                            placeholder="请选择社团名称"
+                            filterable
+                            clearable
+                        >
+                            <el-option
+                                v-for="(item, index) in teams"
+                                :key="index"
+                                :label="item.clubName"
+                                :value="item.id"
+                            ></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="getPageLikeInfo()" style="font-size: 18px">
@@ -156,12 +164,13 @@
 </style>
 
 <script>
-import { getLoginUser, getPageJoinClubApplications, auditJoinClubApplication } from "../../api";
+import { getLoginUser, getPageJoinClubApplications, auditJoinClubApplication, getAllTeamList } from "../../api";
 
 export default {
     data() {
         return {
             userType: "",
+            teams: [],
             pageInfos: [],
             pageIndex: 1,
             pageSize: 10,
@@ -233,6 +242,9 @@ export default {
             this.userType = resp.data.type;
             this.$store.state.userInfo = resp.data;
             this.getPageInfo(1, this.pageSize);
+        });
+        getAllTeamList().then((resp) => {
+            this.teams = resp.data;
         });
     },
 };

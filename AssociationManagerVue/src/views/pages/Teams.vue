@@ -46,7 +46,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="true" slot="header">
+            <div v-if="userType !== 2" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -71,9 +71,12 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
-                        prop="clubName"
                         label="社团名称"
-                    ></el-table-column>
+                    >
+                        <template slot-scope="scope">
+                            <el-link type="primary" @click="showDescWin(scope.row)">{{ scope.row.clubName }}</el-link>
+                        </template>
+                    </el-table-column>
                     <el-table-column
                         align="center"
                         prop="typeName"
@@ -114,6 +117,7 @@
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <el-button
+                                    v-if="userType !== 2"
                                     type="primary"
                                     style="font-size: 14px"
                                     @click="showUpdWin(scope.row)"
@@ -121,6 +125,7 @@
                                     编辑</el-button
                                 >
                                 <el-button
+                                    v-if="userType !== 2"
                                     type="danger"
                                     style="font-size: 14px"
                                     @click="delInfo(scope.row.id)"
@@ -128,6 +133,7 @@
                                     删除</el-button
                                 >
                                 <el-button
+                                    v-if="userType !== 0"
                                     type="success"
                                     style="font-size: 14px"
                                     @click="apply(scope.row.id)"
@@ -246,6 +252,15 @@
                 >
             </div>
         </el-dialog>
+
+        <el-dialog title="社团简介" width="600px" :visible.sync="showDescFlag">
+            <div style="line-height: 1.8; font-size: 16px; padding: 10px;">
+                {{ currentDescription || '暂无简介' }}
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="showDescFlag = false" style="font-size: 18px">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -277,6 +292,8 @@ export default {
             loading: true,
             showAddFlag: false,
             showUpdFlag: false,
+            showDescFlag: false,
+            currentDescription: "",
             qryForm: {
                 clubName: "",
                 typeId: "",
@@ -351,6 +368,10 @@ export default {
                 description: "",
                 typeId: "",
             };
+        },
+        showDescWin(row) {
+            this.currentDescription = row.description;
+            this.showDescFlag = true;
         },
         showAddWin() {
             this.initForm();

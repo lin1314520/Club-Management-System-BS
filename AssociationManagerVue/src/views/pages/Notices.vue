@@ -18,10 +18,10 @@
                             autocomplete="off"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item v-if="userType !== 1">
                         <el-input
                             v-model="qryForm.clubId"
-                            placeholder="输入发布社团ID…"
+                            placeholder="输入社团ID…"
                             autocomplete="off"
                         ></el-input>
                     </el-form-item>
@@ -92,17 +92,25 @@
                         label="通知详情"
                     ></el-table-column>
                     <el-table-column
+                        v-if="userType == 1 || userType == 0"
                         align="center"
                         label="操作处理"
                         fixed="right"
-                        width="140"
+                        width="160"
                     >
                         <template slot-scope="scope">
-                            <div style="display: flex; justify-content: center; align-items: center;">
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <el-button
-                                    type="danger" style="font-size: 14px"
+                                    v-if="userType == 1"
+                                    type="primary"
+                                    style="font-size: 14px"
+                                    @click="showUpdWin(scope.row)"
+                                >编辑</el-button>
+                                <el-button
+                                    type="danger"
+                                    style="font-size: 14px"
                                     @click="delInfo(scope.row.id)"
-                                    > 删除</el-button>
+                                >删除</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -131,11 +139,11 @@
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
-                <el-form-item v-if="true" label="发布社团">
+                <el-form-item label="发布社团" v-if="userType !== 1">
                     <el-select
                         style="width: 100%"
                         v-model="noticesForm.clubId"
-                        placeholder="请选择发布社团…"
+                        placeholder="请选择发布社团"
                     >
                         <el-option
                             v-for="(item, index) in teams"
@@ -169,6 +177,52 @@
                 >
             </div>
         </el-dialog>
+
+        <el-dialog title="修改信息" width="600px" :visible.sync="showUpdFlag">
+            <el-form label-width="90px" :model="noticesForm">
+                <el-form-item label="通知标题">
+                    <el-input
+                        v-model="noticesForm.title"
+                        placeholder="请输入通知标题…"
+                        autocomplete="off"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="发布社团" v-if="userType !== 1">
+                    <el-select
+                        style="width: 100%"
+                        v-model="noticesForm.clubId"
+                        placeholder="请选择发布社团"
+                    >
+                        <el-option
+                            v-for="(item, index) in teams"
+                            :key="index"
+                            :label="item.clubName"
+                            :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="通知详情">
+                    <el-input
+                        type="textarea"
+                        rows="6"
+                        v-model="noticesForm.content"
+                        placeholder="请输入通知详情…"
+                        autocomplete="off"
+                    ></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="showUpdFlag = false" style="font-size: 18px"
+                    >取 消</el-button
+                >
+                <el-button
+                    type="primary"
+                    @click="updInfo()"
+                    style="font-size: 18px"
+                    >确 定</el-button
+                >
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -181,6 +235,7 @@ import {
     getLoginUser,
     getPageNotices,
     addNotices,
+    updNotices,
     delNotices,
 } from "../../api";
 
@@ -189,6 +244,7 @@ export default {
         return {
             teams: [],
             userType: "",
+            myClubId: "",
             pageInfos: [],
             pageIndex: 1,
             pageSize: 10,
@@ -196,6 +252,7 @@ export default {
             totalInfo: 0,
             loading: true,
             showAddFlag: false,
+            showUpdFlag: false,
             qryForm: {
                 clubId: "",
                 title: "",
@@ -272,18 +329,42 @@ export default {
         },
         showAddWin() {
             this.initForm();
+            if (this.userType === 1 && this.myClubId) {
+                this.noticesForm.clubId = this.myClubId;
+            }
             this.showAddFlag = true;
         },
+        showUpdWin(row) {
+            this.noticesForm = { ...row };
+            if (this.userType === 1 && this.myClubId) {
+                this.noticesForm.clubId = this.myClubId;
+            }
+            this.showUpdFlag = true;
+        },
         addInfo() {
+            if (this.userType === 1 && this.myClubId) {
+                this.noticesForm.clubId = this.myClubId;
+            }
             addNotices(this.noticesForm).then((resp) => {
                 this.$message({
                     message: resp.msg,
                     type: "success",
                 });
-
                 this.getPageInfo(1, this.pageSize);
-
                 this.showAddFlag = false;
+            });
+        },
+        updInfo() {
+            if (this.userType === 1 && this.myClubId) {
+                this.noticesForm.clubId = this.myClubId;
+            }
+            updNotices(this.noticesForm).then((resp) => {
+                this.$message({
+                    message: resp.msg,
+                    type: "success",
+                });
+                this.getPageInfo(1, this.pageSize);
+                this.showUpdFlag = false;
             });
         },
         delInfo(id) {
@@ -304,15 +385,25 @@ export default {
         },
     },
     mounted() {
-        this.getPageInfo(1, this.pageSize);
-
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
             this.$store.state.userInfo = resp.data;
-
-            getAllTeamList().then((resp) => {
-                this.teams = resp.data;
-            });
+            if (this.userType === 1) {
+                getAllTeamList().then(teamResp => {
+                    this.teams = teamResp.data;
+                    let myTeam = teamResp.data.find(t => t.managerId === this.$store.state.userInfo.id || t.managerName === this.$store.state.userInfo.realName);
+                    if (myTeam) {
+                        this.myClubId = myTeam.id;
+                        this.qryForm.clubId = myTeam.id;
+                    }
+                    this.getPageInfo(1, this.pageSize);
+                });
+            } else {
+                getAllTeamList().then((resp) => {
+                    this.teams = resp.data;
+                });
+                this.getPageInfo(1, this.pageSize);
+            }
         });
     },
 };

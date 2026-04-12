@@ -13,11 +13,19 @@
             <div>
                 <el-form :inline="true" :model="qryForm">
                     <el-form-item>
-                        <el-input
+                        <el-select
                             v-model="qryForm.clubId"
-                            placeholder="输入社团ID"
-                            autocomplete="off"
-                        ></el-input>
+                            placeholder="请选择社团名称"
+                            filterable
+                            clearable
+                        >
+                            <el-option
+                                v-for="(item, index) in teams"
+                                :key="index"
+                                :label="item.clubName"
+                                :value="item.id"
+                            ></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-input
@@ -95,6 +103,7 @@
                         label="活动地点"
                     ></el-table-column>
                     <el-table-column
+                        v-if="userType !== 2"
                         align="center"
                         label="参与人员"
                         width="170"
@@ -158,10 +167,10 @@
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <template v-if="userType == 0 || userType == 1">
-                                    <el-button v-if="scope.row.status == 0" type="primary" size="mini" @click="changeStatus(scope.row, 1)">发起签到</el-button>
-                                    <el-button v-if="scope.row.status == 1" type="warning" size="mini" @click="changeStatus(scope.row, 2)">发起签退</el-button>
-                                    <el-button v-if="scope.row.status == 2" type="danger" size="mini" @click="changeStatus(scope.row, 3)">结束活动</el-button>
-                                    <el-button v-if="scope.row.status == 3" type="success" size="mini" @click="showTweetWin(scope.row)">发布推文</el-button>
+                                    <el-button v-if="userType == 1 && scope.row.status == 0" type="primary" size="mini" @click="changeStatus(scope.row, 1)">发起签到</el-button>
+                                    <el-button v-if="userType == 1 && scope.row.status == 1" type="warning" size="mini" @click="changeStatus(scope.row, 2)">发起签退</el-button>
+                                    <el-button v-if="userType == 1 && scope.row.status == 2" type="danger" size="mini" @click="changeStatus(scope.row, 3)">结束活动</el-button>
+                                    <el-button v-if="userType == 1 && scope.row.status == 3" type="success" size="mini" @click="showTweetWin(scope.row)">发布推文</el-button>
                                     <el-button
                                         style="font-size: 14px"
                                         type="danger"
@@ -178,7 +187,7 @@
                                         size="mini"
                                         type="primary"
                                         >
-                                        我要报名</el-button
+                                        申请加入活动</el-button
                                     >
                                     <el-button
                                         v-else-if="scope.row.myAuditStatus === 0"

@@ -17,7 +17,6 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="warning" icon="el-icon-search" @click="getPageLikeInfo()"></el-button>
-                        <el-button v-if="true" type="primary" icon="el-icon-plus" @click="showAddWin()"></el-button>
                     </el-form-item>
                 </el-form>
             </div>

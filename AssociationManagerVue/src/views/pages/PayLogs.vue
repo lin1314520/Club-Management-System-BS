@@ -46,7 +46,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="true" slot="header">
+            <div v-if="userType === 0" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -103,19 +103,37 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="true"
+                        v-if="userType === 2"
                         align="center"
                         label="操作处理"
                         fixed="right"
-						width="140"
+                        width="120"
                     >
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <el-button
-                                v-if="scope.row.status == 0"
-                                type="success" style="font-size: 14px"
-                                @click="pay(scope.row.id)"
-                                > 去缴费</el-button>
+                                    v-if="scope.row.status === 0"
+                                    type="primary"
+                                    size="mini"
+                                    @click="showPayWin(scope.row.id)"
+                                >去缴费</el-button>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        v-if="userType === 0"
+                        align="center"
+                        label="操作处理"
+                        fixed="right"
+                        width="120"
+                    >
+                        <template slot-scope="scope">
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
+                                    type="danger"
+                                    size="mini"
+                                    @click="delInfo(scope.row.id)"
+                                >删除</el-button>
                             </div>
                         </template>
                     </el-table-column>
@@ -134,6 +152,23 @@
                 </el-pagination>
             </div>
         </el-card>
+
+        <el-dialog title="选择支付方式" width="400px" :visible.sync="showPayFlag">
+            <div style="text-align: center; margin-bottom: 20px; font-size: 16px;">
+                <el-radio-group v-model="payMethod">
+                    <el-radio label="wechat">
+                        <i class="el-icon-chat-dot-round" style="color: #09BB07; font-size: 24px;"></i> 微信支付
+                    </el-radio>
+                    <el-radio label="alipay">
+                        <i class="el-icon-wallet" style="color: #1677FF; font-size: 24px;"></i> 支付宝支付
+                    </el-radio>
+                </el-radio-group>
+            </div>
+            <div slot="footer" class="dialog-footer" style="text-align: center;">
+                <el-button @click="showPayFlag = false" style="font-size: 16px">取 消</el-button>
+                <el-button type="primary" @click="confirmPay()" style="font-size: 16px">支 付</el-button>
+            </div>
+        </el-dialog>
 
         <el-dialog title="添加信息" width="600px" :visible.sync="showAddFlag">
             <el-form label-width="90px" :model="payLogsForm">
@@ -258,6 +293,9 @@ export default {
             loading: true,
             showAddFlag: false,
             showUpdFlag: false,
+            showPayFlag: false,
+            payMethod: 'wechat',
+            currentPayId: null,
             qryForm: {
                 clubId: "",
                 userId: "",
@@ -337,6 +375,23 @@ export default {
         showAddWin() {
             this.initForm();
             this.showAddFlag = true;
+        },
+        showPayWin(id) {
+            this.currentPayId = id;
+            this.payMethod = 'wechat';
+            this.showPayFlag = true;
+        },
+        confirmPay() {
+            if (!this.currentPayId) return;
+            payRecord(this.currentPayId).then(resp => {
+                if(resp.code == 0) {
+                    this.$message.success("缴费成功");
+                    this.showPayFlag = false;
+                    this.getPageInfo(1, this.pageSize);
+                } else {
+                    this.$message.warning(resp.msg);
+                }
+            })
         },
         pay(id) {
             payRecord(id).then(resp => {
