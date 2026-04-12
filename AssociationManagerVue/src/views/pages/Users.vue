@@ -123,30 +123,32 @@
                         width="300"
                     >
                         <template slot-scope="scope">
-                            <el-dropdown style="margin-right: 10px;" @command="handleCommand($event, scope.row)" trigger="click">
-                              <el-button type="warning" style="font-size: 14px">
-                                转换角色<i class="el-icon-arrow-down el-icon--right"></i>
-                              </el-button>
-                              <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item v-if="scope.row.type !== 0" command="0">设为管理员</el-dropdown-item>
-                                <el-dropdown-item v-if="scope.row.type !== 1" command="1">设为社长</el-dropdown-item>
-                                <el-dropdown-item v-if="scope.row.type !== 2" command="2">设为普通用户</el-dropdown-item>
-                              </el-dropdown-menu>
-                            </el-dropdown>
-                            <el-button
-                                type="primary"
-                                @click="showUpdWin(scope.row)"
-                                style="font-size: 14px"
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                                <el-dropdown @command="handleCommand($event, scope.row)" trigger="click">
+                                  <el-button type="warning" style="font-size: 14px">
+                                    转换角色<i class="el-icon-arrow-down el-icon--right"></i>
+                                  </el-button>
+                                  <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item v-if="scope.row.type !== 0" command="0">设为管理员</el-dropdown-item>
+                                    <el-dropdown-item v-if="scope.row.type !== 1" command="1">设为社长</el-dropdown-item>
+                                    <el-dropdown-item v-if="scope.row.type !== 2" command="2">设为普通用户</el-dropdown-item>
+                                  </el-dropdown-menu>
+                                </el-dropdown>
+                                <el-button
+                                    type="primary"
+                                    @click="showUpdWin(scope.row)"
+                                    style="font-size: 14px"
+                                    >
+                                    编辑</el-button
                                 >
-                                编辑</el-button
-                            >
-                            <el-button
-                                type="danger"
-                                @click="delInfo(scope.row.id, scope.row.type)"
-                                style="font-size: 14px"
+                                <el-button
+                                    type="danger"
+                                    @click="delInfo(scope.row.id, scope.row.type)"
+                                    style="font-size: 14px"
+                                    >
+                                    删除</el-button
                                 >
-                                删除</el-button
-                            >
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

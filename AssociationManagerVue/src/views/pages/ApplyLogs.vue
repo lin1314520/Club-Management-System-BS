@@ -116,7 +116,8 @@
                         width="240"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
                                 v-if="scope.row.auditStatus == '0'"
                                 type="primary"
                                 @click="updInfo(scope.row, '1')"
@@ -130,6 +131,7 @@
                             >
                                 驳回</el-button
                             >
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

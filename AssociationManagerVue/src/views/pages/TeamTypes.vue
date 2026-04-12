@@ -32,12 +32,12 @@
         </el-card>
 
         <el-card shadow="never">
-            <div slot="header">
+            <div slot="header" v-if="userType === 0">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
                     @click="showAddWin()"
-                    >
+                >
                     新增</el-button
                 >
             </div>
@@ -73,16 +73,18 @@
                         </template>
                     </el-table-column>
                     <el-table-column
+                        v-if="userType === 0"
                         align="center"
                         label="操作处理"
                         fixed="right"
                         width="250"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
                                 type="primary"
                                 @click="showUpdWin(scope.row)"
-                                style="font-size: 18px"
+                                style="font-size: 14px"
                             >
                                 
                                 编辑
@@ -90,11 +92,12 @@
                             <el-button
                                 type="danger"
                                 @click="delInfo(scope.row.id)"
-                                style="font-size: 18px"
+                                style="font-size: 14px"
                             >
                                 
                                 删除
                             </el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -190,12 +193,14 @@ import {
     addTeamTypes,
     updTeamTypes,
     delTeamTypes,
+    getLoginUser,
 } from "../../api";
 
 
 export default {
     data() {
         return {
+            userType: -1,
             pageInfos: [],
             pageIndex: 1,
             pageSize: 10,
@@ -323,7 +328,10 @@ export default {
         },
     },
     mounted() {
-        this.getPageInfo(1, this.pageSize);
+        getLoginUser(this.$store.state.token).then((resp) => {
+            this.userType = resp.data.type;
+            this.getPageInfo(1, this.pageSize);
+        });
     },
 };
 </script>

@@ -92,34 +92,18 @@
                         label="通知详情"
                     ></el-table-column>
                     <el-table-column
-                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"
-						width="140"
+                        width="140"
                     >
                         <template slot-scope="scope">
-                            <el-button
-                                type="danger" style="font-size: 18px"
-                                @click="delInfo(scope.row.id)"
-                                > 删除</el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        v-if="true"
-                        align="center"
-                        label="操作处理"
-                        fixed="right"
-						width="140"
-                    >
-                        <template slot-scope="scope">
-                            <el-button
-                                v-if="scope.row.clubId"
-                                type="danger" style="font-size: 18px"
-                                @click="delInfo(scope.row.id)"
-                                > 删除</el-button>
-                            <el-button v-else type="danger" disabled style="font-size: 18px"
-                                > 删除</el-button>
+                            <div style="display: flex; justify-content: center; align-items: center;">
+                                <el-button
+                                    type="danger" style="font-size: 14px"
+                                    @click="delInfo(scope.row.id)"
+                                    > 删除</el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

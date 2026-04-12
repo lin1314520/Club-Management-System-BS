@@ -40,7 +40,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="true" slot="header">
+            <div v-if="userType == 0 || userType == 1" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -150,38 +150,65 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-if="true"
-                        align="center"
-                        label="进度控制"
-                        fixed="right"
-                        width="120"
-                    >
-                        <template slot-scope="scope">
-                            <el-button v-if="scope.row.status == 0" type="primary" size="mini" @click="changeStatus(scope.row, 1)">发起签到</el-button>
-                            <el-button v-if="scope.row.status == 1" type="warning" size="mini" @click="changeStatus(scope.row, 2)">发起签退</el-button>
-                            <el-button v-if="scope.row.status == 2" type="danger" size="mini" @click="changeStatus(scope.row, 3)">结束活动</el-button>
-                            <el-button v-if="scope.row.status == 3" type="success" size="mini" @click="showTweetWin(scope.row)">发布推文</el-button>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        v-if="true"
                         align="center"
                         label="操作处理"
                         fixed="right"
-                        width="140"
+                        :width="userType == 2 ? 140 : 320"
                     >
                         <template slot-scope="scope">
-                            <el-button
-                                style="font-size: 18px"
-                                type="danger"
-                                @click="delInfo(scope.row.id)"
-                                >
-                                删除</el-button
-                            >
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <template v-if="userType == 0 || userType == 1">
+                                    <el-button v-if="scope.row.status == 0" type="primary" size="mini" @click="changeStatus(scope.row, 1)">发起签到</el-button>
+                                    <el-button v-if="scope.row.status == 1" type="warning" size="mini" @click="changeStatus(scope.row, 2)">发起签退</el-button>
+                                    <el-button v-if="scope.row.status == 2" type="danger" size="mini" @click="changeStatus(scope.row, 3)">结束活动</el-button>
+                                    <el-button v-if="scope.row.status == 3" type="success" size="mini" @click="showTweetWin(scope.row)">发布推文</el-button>
+                                    <el-button
+                                        style="font-size: 14px"
+                                        type="danger"
+                                        size="mini"
+                                        @click="delInfo(scope.row.id)"
+                                        >
+                                        删除</el-button
+                                    >
+                                </template>
+                                <template v-else-if="userType == 2">
+                                    <el-button
+                                        v-if="scope.row.myAuditStatus === -1 || scope.row.myAuditStatus === undefined"
+                                        @click="active(scope.row.id)"
+                                        size="mini"
+                                        type="primary"
+                                        >
+                                        我要报名</el-button
+                                    >
+                                    <el-button
+                                        v-else-if="scope.row.myAuditStatus === 0"
+                                        disabled
+                                        size="mini"
+                                        type="info"
+                                        >
+                                        等待审核中</el-button
+                                    >
+                                    <el-button
+                                        v-else-if="scope.row.myAuditStatus === 1"
+                                        disabled
+                                        size="mini"
+                                        type="success"
+                                        >
+                                        已通过审核</el-button
+                                    >
+                                    <el-button
+                                        v-else-if="scope.row.myAuditStatus === 2"
+                                        disabled
+                                        size="mini"
+                                        type="danger"
+                                        >
+                                        报名已拒绝</el-button
+                                    >
+                                </template>
+                            </div>
                         </template>
                     </el-table-column>
                     <el-table-column
-                        v-else
                         align="center"
                         label="了解更多"
                         width="170"
@@ -192,41 +219,6 @@
                                 :width="700"
                                 placement="left"
                             >
-                                <el-button
-                                    v-if="scope.row.myAuditStatus === -1 || scope.row.myAuditStatus === undefined"
-                                    @click="active(scope.row.id)"
-                                    style="margin-bottom: 15px; font-size: 18px"
-                                    type="primary"
-                                    ><i
-                                        class="iconfont icon-r-add"
-                                        style="font-size: 22px"
-                                    ></i>
-                                    我要报名</el-button
-                                >
-                                <el-button
-                                    v-else-if="scope.row.myAuditStatus === 0"
-                                    disabled
-                                    style="margin-bottom: 15px; font-size: 18px"
-                                    type="info"
-                                    >
-                                    等待审核中...</el-button
-                                >
-                                <el-button
-                                    v-else-if="scope.row.myAuditStatus === 1"
-                                    disabled
-                                    style="margin-bottom: 15px; font-size: 18px"
-                                    type="success"
-                                    >
-                                    已通过审核</el-button
-                                >
-                                <el-button
-                                    v-else-if="scope.row.myAuditStatus === 2"
-                                    disabled
-                                    style="margin-bottom: 15px; font-size: 18px"
-                                    type="danger"
-                                    >
-                                    报名已拒绝</el-button
-                                >
                                 <el-descriptions
                                     :column="1"
                                     size="small"
@@ -512,18 +504,24 @@ export default {
             });
         },
         getPageInfo(pageIndex, pageSize) {
+            this.loading = true;
             getPageActivities(pageIndex, pageSize, this.qryForm.clubId, this.qryForm.title).then(
                 async (resp) => {
                     let activities = resp.data.data;
                     // Check user's participation status for each activity
                     if (this.userType == 2 && this.$store.state.userInfo) {
                         const userId = this.$store.state.userInfo.id;
+                        // To avoid infinite loading if there are many activities, we only fetch participants if userType == 2
                         for (let i = 0; i < activities.length; i++) {
-                            const pResp = await getPageActivityParticipants(1, 10, activities[i].id, userId, null);
-                            if (pResp.data && pResp.data.data && pResp.data.data.length > 0) {
-                                activities[i].myAuditStatus = pResp.data.data[0].auditStatus;
-                            } else {
-                                activities[i].myAuditStatus = -1; // Not applied
+                            try {
+                                const pResp = await getPageActivityParticipants(1, 10, activities[i].id, userId, null);
+                                if (pResp.data && pResp.data.data && pResp.data.data.length > 0) {
+                                    activities[i].myAuditStatus = pResp.data.data[0].auditStatus;
+                                } else {
+                                    activities[i].myAuditStatus = -1; // Not applied
+                                }
+                            } catch (e) {
+                                activities[i].myAuditStatus = -1;
                             }
                         }
                     }
@@ -536,9 +534,12 @@ export default {
 
                     this.loading = false;
                 }
-            );
+            ).catch(() => {
+                this.loading = false;
+            });
         },
         getPageLikeInfo() {
+            this.loading = true;
             getPageActivities(
                 1,
                 this.pageSize,
@@ -549,11 +550,15 @@ export default {
                 if (this.userType == 2 && this.$store.state.userInfo) {
                     const userId = this.$store.state.userInfo.id;
                     for (let i = 0; i < activities.length; i++) {
-                        const pResp = await getPageActivityParticipants(1, 10, activities[i].id, userId, null);
-                        if (pResp.data && pResp.data.data && pResp.data.data.length > 0) {
-                            activities[i].myAuditStatus = pResp.data.data[0].auditStatus;
-                        } else {
-                            activities[i].myAuditStatus = -1; // Not applied
+                        try {
+                            const pResp = await getPageActivityParticipants(1, 10, activities[i].id, userId, null);
+                            if (pResp.data && pResp.data.data && pResp.data.data.length > 0) {
+                                activities[i].myAuditStatus = pResp.data.data[0].auditStatus;
+                            } else {
+                                activities[i].myAuditStatus = -1; // Not applied
+                            }
+                        } catch (e) {
+                            activities[i].myAuditStatus = -1;
                         }
                     }
                 }
@@ -563,6 +568,8 @@ export default {
                 this.pageSize = resp.data.pageSize;
                 this.totalInfo = resp.data.count;
                 this.pageTotal = resp.data.pageTotal;
+                this.loading = false;
+            }).catch(() => {
                 this.loading = false;
             });
         },
@@ -665,11 +672,10 @@ export default {
         },
     },
     mounted() {
-        this.getPageInfo(1, this.pageSize);
-
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
             this.$store.state.userInfo = resp.data;
+            this.getPageInfo(1, this.pageSize);
         });
         
         getAllTeamList().then((resp) => {

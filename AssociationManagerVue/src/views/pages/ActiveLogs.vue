@@ -73,7 +73,8 @@
                         fixed="right"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
                                 icon="el-icon-edit"
                                 type="primary"
                                 size="mini"
@@ -85,6 +86,7 @@
                                 size="mini"
                                 @click="delInfo(scope.row.id)"
                             ></el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

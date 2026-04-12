@@ -1,5 +1,37 @@
 <template>
     <div class="fater-body-show">
+        <div style="margin-bottom: 20px;">
+            <el-alert
+                v-if="loginUser.type === 0"
+                title="欢迎回来，尊敬的系统管理员！"
+                description="您可以管理全站社团、系统用户及审核各类申请，掌控全局数据。"
+                type="error"
+                effect="dark"
+                show-icon
+                :closable="false"
+                style="padding: 15px;">
+            </el-alert>
+            <el-alert
+                v-if="loginUser.type === 1"
+                title="欢迎回来，社长！"
+                description="您可以管理本社团成员、审核成员活动情况、发布活动及最新通知。"
+                type="warning"
+                effect="dark"
+                show-icon
+                :closable="false"
+                style="padding: 15px;">
+            </el-alert>
+            <el-alert
+                v-if="loginUser.type === 2"
+                title="欢迎回来，亲爱的同学！"
+                description="快去发现感兴趣的社团和活动吧，丰富你的校园生活。"
+                type="success"
+                effect="dark"
+                show-icon
+                :closable="false"
+                style="padding: 15px;">
+            </el-alert>
+        </div>
         <el-row :gutter="15">
             <el-col :span="12">
                 <el-card shadow="never">

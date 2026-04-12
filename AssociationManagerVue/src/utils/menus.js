@@ -112,12 +112,6 @@ export const memYMenus = {
             component: require("../views/pages/Index.vue").default
         },
         {
-            path: '/teamTypes',
-            name: '社团类型浏览',
-            icon: "iconfont icon-r-list",
-            component: require("../views/pages/TeamTypes.vue").default
-        },
-        {
             path: '/applyLogs',
             name: '入社申请管理',
             icon: "iconfont icon-r-add",
@@ -197,6 +191,12 @@ export const manMenus = {
             name: '首页',
             icon: "iconfont icon-r-home",
             component: require("../views/pages/Index.vue").default
+        },
+        {
+            path: '/teamTypes',
+            name: '社团类型浏览',
+            icon: "iconfont icon-r-list",
+            component: require("../views/pages/TeamTypes.vue").default
         },
         {
             path: '/applyLogs',

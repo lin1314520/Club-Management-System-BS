@@ -106,44 +106,35 @@
                         label="社团人数"
                     ></el-table-column>
                     <el-table-column
-                        v-if="true"
                         align="center"
-                        width="250"
+                        width="300"
                         label="操作处理"
                         fixed="right"
                     >
                         <template slot-scope="scope">
-                            <el-button
-                                type="primary"
-                                style="font-size: 18px"
-                                @click="showUpdWin(scope.row)"
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
+                                    type="primary"
+                                    style="font-size: 14px"
+                                    @click="showUpdWin(scope.row)"
+                                    >
+                                    编辑</el-button
                                 >
-                                编辑</el-button
-                            >
-                            <el-button
-                                type="danger"
-                                style="font-size: 18px"
-                                @click="delInfo(scope.row.id)"
+                                <el-button
+                                    type="danger"
+                                    style="font-size: 14px"
+                                    @click="delInfo(scope.row.id)"
+                                    >
+                                    删除</el-button
                                 >
-                                删除</el-button
-                            >
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                        v-if="true"
-                        align="center"
-                        label="操作处理"
-                        fixed="right"
-                        width="140"
-                    >
-                        <template slot-scope="scope">
-                            <el-button
-                                type="primary"
-                                style="font-size: 18px"
-                                @click="apply(scope.row.id)"
+                                <el-button
+                                    type="success"
+                                    style="font-size: 14px"
+                                    @click="apply(scope.row.id)"
+                                    >
+                                    申请</el-button
                                 >
-                                申请</el-button
-                            >
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

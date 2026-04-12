@@ -44,11 +44,13 @@
                     
                     <el-table-column v-if="true" align="center" label="操作处理" width="150" fixed="right">
                         <template slot-scope="scope">
-                            <!-- 管理员操作 -->
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <!-- 管理员操作 -->
                             <el-button v-if="userType == 0 && scope.row.auditStatus == 0" type="success" size="mini" @click="audit(scope.row.id, 1)">通过</el-button>
                             <el-button v-if="userType == 0 && scope.row.auditStatus == 0" type="danger" size="mini" @click="audit(scope.row.id, 2)">拒绝</el-button>
                             <!-- 普通用户操作 -->
                             <el-button v-if="userType == 2 && scope.row.auditStatus == 0" type="danger" size="mini" @click="cancelApp(scope.row.id)">撤销</el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

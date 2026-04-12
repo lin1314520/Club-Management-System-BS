@@ -110,13 +110,15 @@
                         width="140"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
                                 type="danger"
-                                style="font-size: 18px"
+                                style="font-size: 14px"
                                 @click="delInfo(scope.row.id)"
                                 >
                                 删除</el-button
                             >
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

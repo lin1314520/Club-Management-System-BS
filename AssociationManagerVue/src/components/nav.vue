@@ -35,8 +35,11 @@
                             "
                         ></el-avatar>
                     </el-col>
-                    <el-col :span="17" style="font-size: 24px; font-weight: 600;text-align: center;">
-						{{$store.state.user != undefined ? $store.state.user.name : ''}}
+                    <el-col :span="17" style="font-size: 24px; font-weight: 600;text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px;">
+						<span>{{$store.state.user != undefined ? $store.state.user.name : ''}}</span>
+                        <el-tag v-if="$store.state.user && $store.state.user.type === 0" type="danger" size="medium" effect="dark"><i class="el-icon-s-custom"></i> 管理员</el-tag>
+                        <el-tag v-if="$store.state.user && $store.state.user.type === 1" type="warning" size="medium" effect="dark"><i class="el-icon-s-check"></i> 社长</el-tag>
+                        <el-tag v-if="$store.state.user && $store.state.user.type === 2" type="success" size="medium" effect="dark"><i class="el-icon-user"></i> 普通用户</el-tag>
 					</el-col>
                 </el-row>
             </span>

@@ -110,11 +110,13 @@
 						width="140"
                     >
                         <template slot-scope="scope">
-                            <el-button
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button
                                 v-if="scope.row.status == 0"
-                                type="success" style="font-size: 18px"
+                                type="success" style="font-size: 14px"
                                 @click="pay(scope.row.id)"
                                 > 去缴费</el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

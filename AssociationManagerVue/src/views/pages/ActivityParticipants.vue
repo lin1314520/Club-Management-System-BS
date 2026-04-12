@@ -51,7 +51,8 @@
                     
                     <el-table-column align="center" label="操作处理" width="160" fixed="right">
                         <template slot-scope="scope">
-                            <!-- 社长操作 -->
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <!-- 社长操作 -->
                             <el-button v-if="userType == 1 && scope.row.auditStatus == 0" type="success" size="mini" @click="audit(scope.row.id, 1)">通过</el-button>
                             <el-button v-if="userType == 1 && scope.row.auditStatus == 0" type="danger" size="mini" @click="audit(scope.row.id, 2)">拒绝</el-button>
                             
@@ -59,6 +60,7 @@
                             <el-button v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus == 1" type="primary" size="mini" @click="signIn(scope.row)">签到</el-button>
                             <span v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus != 1" style="color: gray">等待发起签到</span>
                             <el-button v-if="userType == 2 && scope.row.auditStatus == 1 && scope.row.activityStatus == 2" type="warning" size="mini" @click="signOut(scope.row)">签退</el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>

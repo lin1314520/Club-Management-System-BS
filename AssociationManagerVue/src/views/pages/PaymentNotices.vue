@@ -35,7 +35,9 @@
                     
                     <el-table-column v-if="true" align="center" label="操作处理" width="120" fixed="right">
                         <template slot-scope="scope">
-                            <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">删除</el-button>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                                <el-button type="danger" size="mini" @click="delInfo(scope.row.id)">删除</el-button>
+                            </div>
                         </template>
                     </el-table-column>
                 </el-table>
