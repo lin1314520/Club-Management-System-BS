@@ -11,6 +11,13 @@
             </div>
             <div>
                 <el-form :inline="true" :model="qryForm">
+                    <el-form-item>
+                        <el-input
+                            v-model="qryForm.userName"
+                            placeholder="请输入成员ID/成员姓名"
+                            autocomplete="off"
+                        ></el-input>
+                    </el-form-item>
                     <el-form-item v-if="userType !== 1">
                         <el-input
                             v-model="qryForm.clubId"
@@ -151,6 +158,7 @@ export default {
             qryForm: {
                 token: this.$store.state.token,
                 clubId: "",
+                userName: "",
                 status: 1, // 默认查询已加入的成员
             },
         };
@@ -170,11 +178,19 @@ export default {
         getPageInfo(pageIndex, pageSize) {
             getPageMembers(pageIndex, pageSize, this.qryForm.clubId, this.qryForm.status).then(
                 (resp) => {
-                    this.pageInfos = resp.data.data;
+                    let members = resp.data.data;
+                    if (this.qryForm.userName) {
+                        const keyword = this.qryForm.userName.toLowerCase();
+                        members = members.filter(m => 
+                            (m.userName && m.userName.toLowerCase().includes(keyword)) || 
+                            (m.realName && m.realName.toLowerCase().includes(keyword))
+                        );
+                    }
+                    this.pageInfos = members;
                     this.pageIndex = resp.data.pageIndex;
                     this.pageSize = resp.data.pageSize;
                     this.pageTotal = resp.data.pageTotal;
-                    this.totalInfo = resp.data.count;
+                    this.totalInfo = this.qryForm.userName ? members.length : resp.data.count;
 
                     this.loading = false;
 					
@@ -182,20 +198,7 @@ export default {
             );
         },
         getPageLikeInfo() {
-            getPageMembers(
-                1,
-                this.pageSize,
-                this.qryForm.clubId,
-                this.qryForm.status
-            ).then((resp) => {
-                this.pageInfos = resp.data.data;
-                this.pageIndex = resp.data.pageIndex;
-                this.pageSize = resp.data.pageSize;
-                this.totalInfo = resp.data.count;
-                this.pageTotal = resp.data.pageTotal;
-                this.loading = false;
-				
-            });
+            this.getPageInfo(1, this.pageSize);
         },
         handleSizeChange(pageSize) {
             this.getPageInfo(

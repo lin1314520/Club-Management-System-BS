@@ -17,6 +17,7 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button type="warning" icon="el-icon-search" @click="getPageLikeInfo()"></el-button>
+                        <el-button v-if="userType === 2" type="primary" icon="el-icon-plus" @click="showAddWin()">申请建社</el-button>
                     </el-form-item>
                 </el-form>
             </div>

@@ -34,7 +34,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="true" slot="header">
+            <div v-if="userType !== 2" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -58,9 +58,12 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
-                        prop="title"
                         label="通知标题"
-                    ></el-table-column>
+                    >
+                        <template slot-scope="scope">
+                            <el-link type="primary" @click="showDetail(scope.row)">{{ scope.row.title }}</el-link>
+                        </template>
+                    </el-table-column>
                     <el-table-column
                         align="center"
                         prop="clubId"
@@ -145,6 +148,7 @@
                         v-model="noticesForm.clubId"
                         placeholder="请选择发布社团"
                     >
+                        <el-option label="全体系统" value=""></el-option>
                         <el-option
                             v-for="(item, index) in teams"
                             :key="index"
@@ -223,6 +227,22 @@
                 >
             </div>
         </el-dialog>
+        <el-dialog title="通知详情" width="600px" :visible.sync="showDetailFlag">
+            <el-descriptions :column="1" border>
+                <el-descriptions-item label="通知标题">{{ currentNotice.title }}</el-descriptions-item>
+                <el-descriptions-item label="发布社团">
+                    <el-tag v-if="currentNotice.clubId == null" type="danger">系统通知</el-tag>
+                    <el-tag v-else type="primary">{{ currentNotice.clubName }}</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="发布时间">{{ formatDate(currentNotice.createTime) }}</el-descriptions-item>
+                <el-descriptions-item label="通知内容">
+                    <div style="white-space: pre-wrap;">{{ currentNotice.content }}</div>
+                </el-descriptions-item>
+            </el-descriptions>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="showDetailFlag = false">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -253,6 +273,8 @@ export default {
             loading: true,
             showAddFlag: false,
             showUpdFlag: false,
+            showDetailFlag: false,
+            currentNotice: {},
             qryForm: {
                 clubId: "",
                 title: "",
@@ -333,6 +355,10 @@ export default {
                 this.noticesForm.clubId = this.myClubId;
             }
             this.showAddFlag = true;
+        },
+        showDetail(row) {
+            this.currentNotice = row;
+            this.showDetailFlag = true;
         },
         showUpdWin(row) {
             this.noticesForm = { ...row };

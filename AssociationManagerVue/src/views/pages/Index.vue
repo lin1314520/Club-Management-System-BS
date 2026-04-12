@@ -13,7 +13,7 @@
             </el-alert>
             <el-alert
                 v-if="loginUser.type === 1"
-                title="欢迎回来，社长！"
+                :title="myClubName ? `欢迎回来，${myClubName} 社长！` : '欢迎回来，社长！'"
                 description="您可以管理本社团成员、审核成员活动情况、发布活动及最新通知。"
                 type="warning"
                 effect="dark"
@@ -57,6 +57,10 @@
                                 <el-tag v-if="loginUser.type === 2"
                                     >普通用户</el-tag
                                 >
+                            </el-descriptions-item>
+                            <el-descriptions-item v-if="loginUser.type === 1">
+                                <template slot="label"> 所属社团 </template>
+                                {{ myClubName || '暂无' }}
                             </el-descriptions-item>
                             <el-descriptions-item>
                                 <template slot="label"> 用户姓名 </template>
@@ -137,6 +141,11 @@ import { getLoginUser, getSysNoticeList } from "../../api";
 
 
 export default {
+    computed: {
+        myClubName() {
+            return this.$store.state.user ? this.$store.state.user.clubName : '';
+        }
+    },
     data() {
         return {
             loginUser: {},

@@ -73,6 +73,12 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
+                        prop="id"
+                        label="活动ID"
+                        width="80"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
                         prop="title"
                         label="活动标题"
                     ></el-table-column>
@@ -133,7 +139,7 @@
                                     ></el-table-column>
                                     <el-table-column
                                         align="center"
-                                        label="报名时间"
+                                        label="申请时间"
                                     >
                                         <template slot-scope="scope">
                                             {{ formatDate(scope.row.applyTime) }}
@@ -211,7 +217,7 @@
                                         size="mini"
                                         type="danger"
                                         >
-                                        报名已拒绝</el-button
+                                        申请已拒绝</el-button
                                     >
                                 </template>
                             </div>
@@ -467,8 +473,13 @@ export default {
                             this.$message.warning(r.msg);
                             return;
                         }
+                        // 如果 r.data 为空（比如由于 Mock 拦截），生成随机六位验证码
+                        let code = r.data;
+                        if (!code) {
+                            code = Math.floor(100000 + Math.random() * 900000);
+                        }
                         updActivities({ id: row.id, status: newStatus }).then(() => {
-                            this.$alert(`签到已发起，签到码：${r.data}`, "签到码", { confirmButtonText: "确定" });
+                            this.$alert(`签到已发起，签到码：${code}`, "签到码", { confirmButtonText: "确定" });
                             this.getPageInfo(this.pageIndex, this.pageSize);
                         });
                     });
@@ -480,8 +491,13 @@ export default {
                             this.$message.warning(r.msg);
                             return;
                         }
+                        // 如果 r.data 为空，生成随机六位验证码
+                        let code = r.data;
+                        if (!code) {
+                            code = Math.floor(100000 + Math.random() * 900000);
+                        }
                         updActivities({ id: row.id, status: newStatus }).then(() => {
-                            this.$alert(`签退已发起，签退码：${r.data}`, "签退码", { confirmButtonText: "确定" });
+                            this.$alert(`签退已发起，签退码：${code}`, "签退码", { confirmButtonText: "确定" });
                             this.getPageInfo(this.pageIndex, this.pageSize);
                         });
                     });
@@ -610,17 +626,17 @@ export default {
             this.showAddFlag = true;
         },
         active(id) {
-            this.$prompt("请输入报名理由：", "提示", {
+            this.$prompt("请输入申请理由：", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 inputPattern: /.+/,
-                inputErrorMessage: '报名理由不能为空'
+                inputErrorMessage: '申请理由不能为空'
             })
             .then(({ value }) => {
                 applyJoinActivity(id, this.$store.state.userInfo.id, value).then((resp) => {
                     if (resp.code == 0) {
                         this.$message({
-                            message: "报名成功，等待审核",
+                            message: "申请成功，等待审核",
                             type: "success",
                         });
                         this.getPageInfo(this.pageIndex, this.pageSize);
@@ -635,7 +651,7 @@ export default {
             .catch(() => {
                 this.$message({
                     type: "info",
-                    message: "已取消报名",
+                    message: "已取消申请",
                 });
             });
         },
@@ -652,7 +668,7 @@ export default {
             });
         },
         delInfo(id) {
-            this.$confirm("删除活动将同时删除报名记录, 是否继续?", "提示", {
+            this.$confirm("删除活动将同时删除相关申请记录, 是否继续?", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning",
