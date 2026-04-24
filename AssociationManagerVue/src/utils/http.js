@@ -39,7 +39,7 @@ const generateMockList = (url) => {
             description: "这是一条测试简介" + i,
             amount: 100 * i,
             status: i % 2 === 0 ? 1 : 0,
-            auditStatus: String((i - 1) % 3), // "0", "1", "2"
+            auditStatus: "-1", // "0", "1", "2"
             signInStatus: 1,
             signOutStatus: 0,
             activityStatus: 1,
@@ -155,6 +155,7 @@ service.request = function(config) {
                         birthday: "2000-01-01",
                         phone: "13800138000",
                         address: "测试地址",
+                        studentId: "2026001",
                         token: "mock_token_for_test"
                     }
                 });

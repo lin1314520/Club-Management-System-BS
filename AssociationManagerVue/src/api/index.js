@@ -24,9 +24,9 @@ export function updLoginUserPwd(token, newPwd) {
 }
 
 /** 1. 系统用户管理接口 */
-export function getPageUsers(pageIndex, pageSize, username, realName, phone) {
+export function getPageUsers(pageIndex, pageSize, username, realName, phone, studentId, address) {
 	return http.get('/sysUser/page', {
-		params: { pageIndex, pageSize, username, realName, phone }
+		params: { pageIndex, pageSize, username, realName, phone, studentId, address }
 	});
 }
 export function addUsers(params) {

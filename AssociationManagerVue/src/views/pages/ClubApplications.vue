@@ -41,6 +41,7 @@
                             <el-tag type="info" v-if="scope.row.auditStatus == 3">已撤销</el-tag>
                         </template>
                     </el-table-column>
+                    <el-table-column align="center" prop="feedback" label="建社申请结果"></el-table-column>
                     
                     <el-table-column v-if="true" align="center" label="操作处理" width="150" fixed="right">
                         <template slot-scope="scope">

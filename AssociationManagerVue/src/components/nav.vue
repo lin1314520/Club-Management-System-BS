@@ -119,12 +119,21 @@
                         </el-form-item>
                     </el-col>
                 </el-row>
-                <el-form-item label="联系地址">
+                <el-form-item label="专业班级">
                     <el-input
                         rows="4"
                         type="textarea"
                         v-model="userForm.address"
-                        placeholder="请输入联系地址…"
+                        placeholder="请输入专业班级…"
+                        autocomplete="off"
+                    ></el-input>
+                </el-form-item>
+                  <el-form-item label="学号">
+                    <el-input
+                        rows="4"
+                        type="textarea"
+                        v-model="userForm.studentId"
+                        placeholder="请输入学号…"
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>

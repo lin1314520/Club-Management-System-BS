@@ -79,8 +79,12 @@
                                 {{ loginUser.phone }}
                             </el-descriptions-item>
                             <el-descriptions-item>
-                                <template slot="label"> 联系地址 </template>
+                                <template slot="label"> 专业班级 </template>
                                 {{ loginUser.address }}
+                            </el-descriptions-item>
+                            <el-descriptions-item>
+                                <template slot="label"> 学号 </template>
+                                {{ loginUser.studentId }}
                             </el-descriptions-item>
                         </el-descriptions>
                     </div>

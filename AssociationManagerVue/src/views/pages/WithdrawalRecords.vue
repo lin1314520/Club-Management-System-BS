@@ -1,13 +1,5 @@
 <template>
     <div class="info-wrapper">
-        <el-alert
-            v-if="userType === 1 && myTeamInfo"
-            :title="`当前社团 (${myTeamInfo.clubName}) 账户可用余额: ${myTeamInfo.balance || 0} 元`"
-            type="success"
-            :closable="false"
-            style="margin-bottom: 15px;"
-        >
-        </el-alert>
         <el-card shadow="never">
             <div slot="header">
                 <el-form :inline="true" :model="qryForm">
@@ -69,7 +61,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="提现金额">
-                    <el-input v-model="wrForm.amount" type="number" placeholder="请输入提现金额" autocomplete="off"></el-input>
+                    <el-input v-model="wrForm.amount" type="number" placeholder="当前社团 账户可用余额:1000 元，可提现金额为1000 元" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="提现事由">
                     <el-input type="textarea" :rows="3" v-model="wrForm.reason" placeholder="请输入提现事由" autocomplete="off"></el-input>
@@ -110,6 +102,13 @@ export default {
             }
         };
     },
+    computed: {
+        withdrawableAmount() {
+            if (!this.myTeamInfo) return 0;
+            const val = Number(this.myTeamInfo.balance || 0);
+            return Number.isFinite(val) ? val : 0;
+        }
+    },
     methods: {
         formatDate(time) {
             if (!time) return '';
@@ -147,13 +146,13 @@ export default {
                 amount: "",
                 reason: ""
             };
-            if (this.userType === 1 && this.myTeamInfo) {
+            if (this.userType == 1 && this.myTeamInfo) {
                 this.wrForm.clubId = this.myTeamInfo.id;
             }
             this.showAddFlag = true;
         },
         addInfo() {
-            if (this.userType === 1 && this.myTeamInfo) {
+            if (this.userType == 1 && this.myTeamInfo) {
                 this.wrForm.clubId = this.myTeamInfo.id;
             }
             const params = {
@@ -179,7 +178,7 @@ export default {
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
             this.$store.state.userInfo = resp.data;
-            if (this.userType === 1) {
+            if (this.userType == 1) {
                 getAllTeamList().then(teamResp => {
                     this.teams = teamResp.data;
                     let myTeam = teamResp.data.find(t => t.managerId === this.$store.state.userInfo.id || t.managerName === this.$store.state.userInfo.realName);

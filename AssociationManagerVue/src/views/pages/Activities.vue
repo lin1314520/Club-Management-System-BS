@@ -168,7 +168,7 @@
                         align="center"
                         label="操作处理"
                         fixed="right"
-                        :width="userType == 2 ? 140 : 320"
+                        :width="userType == 2 ? 170 : 320"
                     >
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
@@ -188,7 +188,7 @@
                                 </template>
                                 <template v-else-if="userType == 2">
                                     <el-button
-                                        v-if="scope.row.myAuditStatus === -1 || scope.row.myAuditStatus === undefined"
+                                        v-if="scope.row.myAuditStatus == -1 || scope.row.myAuditStatus === undefined"
                                         @click="active(scope.row.id)"
                                         size="mini"
                                         type="primary"
@@ -196,24 +196,24 @@
                                         申请加入活动</el-button
                                     >
                                     <el-button
-                                        v-else-if="scope.row.myAuditStatus === 0"
-                                        disabled
+                                        v-else-if="scope.row.myAuditStatus == 0"
+                                        @click="showMyJoinStatus(scope.row)"
                                         size="mini"
                                         type="info"
                                         >
                                         等待审核中</el-button
                                     >
                                     <el-button
-                                        v-else-if="scope.row.myAuditStatus === 1"
-                                        disabled
+                                        v-else-if="scope.row.myAuditStatus == 1"
+                                        @click="showMyJoinStatus(scope.row)"
                                         size="mini"
                                         type="success"
                                         >
                                         已通过审核</el-button
                                     >
                                     <el-button
-                                        v-else-if="scope.row.myAuditStatus === 2"
-                                        disabled
+                                        v-else-if="scope.row.myAuditStatus == 2"
+                                        @click="showMyJoinStatus(scope.row)"
                                         size="mini"
                                         type="danger"
                                         >
@@ -455,6 +455,22 @@ export default {
             const s = date.getSeconds().toString().padStart(2, '0');
             return `${y}-${m}-${d} ${h}:${min}:${s}`;
         },
+        showMyJoinStatus(row) {
+            if (!row) return;
+            const status = Number(row.myAuditStatus);
+            if (status === 0) {
+                this.$message.info("当前申请正在审核中");
+                return;
+            }
+            if (status === 1) {
+                this.$message.success("申请已通过审核");
+                return;
+            }
+            if (status === 2) {
+                this.$message.warning("申请已被拒绝");
+                return;
+            }
+        },
         getActivePeople(activeId) {
             getActiveLogs(activeId).then((resp) => {
                 this.activeLogs = [];
@@ -473,13 +489,8 @@ export default {
                             this.$message.warning(r.msg);
                             return;
                         }
-                        // 如果 r.data 为空（比如由于 Mock 拦截），生成随机六位验证码
-                        let code = r.data;
-                        if (!code) {
-                            code = Math.floor(100000 + Math.random() * 900000);
-                        }
                         updActivities({ id: row.id, status: newStatus }).then(() => {
-                            this.$alert(`签到已发起，签到码：${code}`, "签到码", { confirmButtonText: "确定" });
+                            this.$message.success("签到已发起，成员可以直接签到");
                             this.getPageInfo(this.pageIndex, this.pageSize);
                         });
                     });
@@ -491,13 +502,8 @@ export default {
                             this.$message.warning(r.msg);
                             return;
                         }
-                        // 如果 r.data 为空，生成随机六位验证码
-                        let code = r.data;
-                        if (!code) {
-                            code = Math.floor(100000 + Math.random() * 900000);
-                        }
                         updActivities({ id: row.id, status: newStatus }).then(() => {
-                            this.$alert(`签退已发起，签退码：${code}`, "签退码", { confirmButtonText: "确定" });
+                            this.$message.success("签退已发起，成员可以直接签退");
                             this.getPageInfo(this.pageIndex, this.pageSize);
                         });
                     });

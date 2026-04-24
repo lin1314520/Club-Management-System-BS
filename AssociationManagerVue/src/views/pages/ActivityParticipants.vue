@@ -29,7 +29,7 @@
                     <el-table-column align="center" prop="activityTitle" label="活动标题"></el-table-column>
                     <el-table-column align="center" prop="userName" label="申请人账号"></el-table-column>
                     <el-table-column align="center" prop="realName" label="申请人姓名"></el-table-column>
-                    <el-table-column align="center" label="报名时间">
+                    <el-table-column align="center" label="活动申请时间">
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.applyTime) }}
                         </template>
@@ -42,7 +42,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column align="center" prop="applyReason" label="申请理由"></el-table-column>
-                    <el-table-column align="center" prop="feedback" label="审批反馈"></el-table-column>
+                    <el-table-column align="center" prop="feedback" label="活动申请反馈"></el-table-column>
                     <el-table-column align="center" label="审批时间">
                         <template slot-scope="scope">
                             {{ formatDate(scope.row.auditTime) }}
@@ -138,24 +138,24 @@ export default {
             }).catch(() => {});
         },
         signIn(row) {
-            this.$prompt("请输入签到码(signInId)", "签到打卡", {
+            this.$confirm("确认要进行签到打卡吗？", "签到打卡", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
-                inputPlaceholder: "社长发起签到后生成的ID",
-            }).then(({ value }) => {
-                punchCardSignIn(value, row.userId).then(resp => {
+                type: "warning",
+            }).then(() => {
+                punchCardSignIn(row.activityId, row.userId).then(resp => {
                     this.$message.success(resp.msg);
                     this.getPageInfo(this.pageIndex, this.pageSize);
                 });
             }).catch(() => {});
         },
         signOut(row) {
-            this.$prompt("请输入签退码(signOutId)", "签退打卡", {
+            this.$confirm("确认要进行签退打卡吗？", "签退打卡", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
-                inputPlaceholder: "社长发起签退后生成的ID",
-            }).then(({ value }) => {
-                punchCardSignOut(value, row.userId).then(resp => {
+                type: "warning",
+            }).then(() => {
+                punchCardSignOut(row.activityId, row.userId).then(resp => {
                     this.$message.success(resp.msg);
                     this.getPageInfo(this.pageIndex, this.pageSize);
                 });

@@ -46,7 +46,7 @@
         </el-card>
 
         <el-card shadow="never">
-            <div v-if="userType !== 2" slot="header">
+            <div v-if="userType === 0" slot="header">
                 <el-button
                     type="primary"
                     style="font-size: 18px"
@@ -110,6 +110,15 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
+                        label="社团状态"
+                    >
+                        <template slot-scope="scope">
+                            <el-tag type="success" v-if="scope.row.status == 1">正常</el-tag>
+                            <el-tag type="danger" v-if="scope.row.status == 0">禁用</el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        align="center"
                         width="300"
                         label="操作处理"
                         fixed="right"
@@ -117,7 +126,7 @@
                         <template slot-scope="scope">
                             <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                                 <el-button
-                                    v-if="userType !== 2"
+                                    v-if="userType === 0 || userType === 1"
                                     type="primary"
                                     style="font-size: 14px"
                                     @click="showUpdWin(scope.row)"
@@ -125,7 +134,7 @@
                                     编辑</el-button
                                 >
                                 <el-button
-                                    v-if="userType !== 2"
+                                    v-if="userType === 0"
                                     type="danger"
                                     style="font-size: 14px"
                                     @click="delInfo(scope.row.id)"
@@ -190,6 +199,12 @@
                         autocomplete="off"
                     ></el-input>
                 </el-form-item>
+                <el-form-item label="社团状态">
+                    <el-select style="width: 100%" v-model="teamsForm.status" placeholder="请选择社团状态">
+                        <el-option label="正常" :value="1"></el-option>
+                        <el-option label="禁用" :value="0"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="showAddFlag = false" style="font-size: 18px"
@@ -236,6 +251,12 @@
                         placeholder="请输入社团简介…"
                         autocomplete="off"
                     ></el-input>
+                </el-form-item>
+                <el-form-item label="社团状态">
+                    <el-select style="width: 100%" v-model="teamsForm.status" placeholder="请选择社团状态">
+                        <el-option label="正常" :value="1"></el-option>
+                        <el-option label="禁用" :value="0"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -304,6 +325,7 @@ export default {
                 clubName: "",
                 description: "",
                 typeId: "",
+                status: 1,
             },
         };
     },
@@ -367,6 +389,7 @@ export default {
                 clubName: "",
                 description: "",
                 typeId: "",
+                status: 1,
             };
         },
         showDescWin(row) {

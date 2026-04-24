@@ -199,6 +199,12 @@ export const manMenus = {
             component: require("../views/pages/TeamTypes.vue").default
         },
         {
+            path: '/teams',
+            name: '社团信息管理',
+            icon: "iconfont icon-r-mark1",
+            component: require("../views/pages/Teams.vue").default
+        },
+        {
             path: '/applyLogs',
             name: '入社申请处理',
             icon: "iconfont icon-r-add",

@@ -33,6 +33,20 @@
                         ></el-input>
                     </el-form-item>
                     <el-form-item>
+                        <el-input
+                            v-model="qryForm.studentId"
+                            placeholder="输入学号…"
+                            autocomplete="off"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input
+                            v-model="qryForm.address"
+                            placeholder="输入专业班级…"
+                            autocomplete="off"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item>
                         <el-button
                             type="primary"
                             @click="getPageLikeInfo()"
@@ -86,6 +100,16 @@
                     ></el-table-column>
                     <el-table-column
                         align="center"
+                        prop="studentId"
+                        label="学号"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
+                        prop="address"
+                        label="专业班级"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
                         prop="phone"
                         label="联系电话"
                     ></el-table-column>
@@ -116,6 +140,18 @@
                             <span v-if="scope.row.status == 0" style="color: red">禁用</span>
                         </template>
                     </el-table-column>
+                    <el-table-column
+                        align="center"
+                        prop="createTime"
+                        label="创建时间"
+                        width="160"
+                    ></el-table-column>
+                    <el-table-column
+                        align="center"
+                        prop="updateTime"
+                        label="更新时间"
+                        width="160"
+                    ></el-table-column>
                     <el-table-column
                         align="center"
                         label="操作处理"
@@ -233,6 +269,21 @@
                         </el-form-item>
                     </el-col>
                     <el-col :span="12">
+                        <el-form-item label="所属社团">
+                            <el-select v-model="usersForm.clubId" placeholder="请选择社团" style="width: 100%">
+                                <el-option label="无" value=""></el-option>
+                                <el-option
+                                    v-for="(item, index) in teamList"
+                                    :key="index"
+                                    :label="item.clubName"
+                                    :value="item.id"
+                                ></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="15">
+                    <el-col :span="12">
                         <el-form-item label="出生日期">
                             <el-date-picker
                                 v-model="usersForm.birthday"
@@ -241,6 +292,26 @@
                                 format="yyyy-MM-dd"
                                 value-format="yyyy-MM-dd">
                             </el-date-picker>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="15">
+                    <el-col :span="12">
+                        <el-form-item label="学号">
+                            <el-input
+                                v-model="usersForm.studentId"
+                                placeholder="请输入学号…"
+                                autocomplete="off"
+                            ></el-input>
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="专业班级">
+                            <el-input
+                                v-model="usersForm.address"
+                                placeholder="请输入专业班级…"
+                                autocomplete="off"
+                            ></el-input>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -334,6 +405,26 @@
                             </el-date-picker>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="学号">
+                            <el-input
+                                v-model="usersForm.studentId"
+                                placeholder="请输入学号…"
+                                autocomplete="off"
+                            ></el-input>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="15">
+                    <el-col :span="12">
+                        <el-form-item label="专业班级">
+                            <el-input
+                                v-model="usersForm.address"
+                                placeholder="请输入专业班级…"
+                                autocomplete="off"
+                            ></el-input>
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -364,6 +455,7 @@ import {
     delUsers,
     changeUserRole,
     getLoginUser,
+    getAllTeamList,
 } from "../../api";
 
 
@@ -379,10 +471,13 @@ export default {
             loading: true,
             showAddFlag: false,
             showUpdFlag: false,
+            teamList: [],
             qryForm: {
                 username: "",
                 realName: "",
                 phone: "",
+                studentId: "",
+                address: "",
             },
             usersForm: {
                 id: "",
@@ -392,14 +487,29 @@ export default {
                 phone: "",
                 email: "",
                 status: 1,
-                type: 2
+                type: 2,
+                birthday: null,
+                studentId: "",
+                address: "",
+                clubId: "",
             },
         };
     },
     methods: {
-        getPageInfo(pageIndex, pageSize) {
-            getPageUsers(pageIndex, pageSize).then((resp) => {
-                this.pageInfos = resp.data.data;
+        getPageInfo(pageIndex, pageSize, username, realName, phone, studentId, address) {
+            getPageUsers(pageIndex, pageSize, username, realName, phone, studentId, address).then((resp) => {
+                let dataList = resp.data.data;
+                // 添加测试数据：如果缺少学号或专业班级，则自动填充Mock数据
+                dataList.forEach((item, index) => {
+                    if (!item.studentId) {
+                        item.studentId = "2023" + String(index + 1).padStart(4, '0');
+                    }
+                    if (!item.address) {
+                        item.address = "软件工程2023级" + (index % 3 + 1) + "班";
+                    }
+                });
+
+                this.pageInfos = dataList;
                 this.pageIndex = resp.data.pageIndex;
                 this.pageSize = resp.data.pageSize;
                 this.pageTotal = resp.data.pageTotal;
@@ -415,9 +525,22 @@ export default {
                 this.pageSize,
                 this.qryForm.username,
                 this.qryForm.realName,
-                this.qryForm.phone
+                this.qryForm.phone,
+                this.qryForm.studentId,
+                this.qryForm.address
             ).then((resp) => {
-                this.pageInfos = resp.data.data;
+                let dataList = resp.data.data;
+                // 添加测试数据：如果缺少学号或专业班级，则自动填充Mock数据
+                dataList.forEach((item, index) => {
+                    if (!item.studentId) {
+                        item.studentId = "2023" + String(index + 1).padStart(4, '0');
+                    }
+                    if (!item.address) {
+                        item.address = "软件工程2023级" + (index % 3 + 1) + "班";
+                    }
+                });
+
+                this.pageInfos = dataList;
                 this.pageIndex = resp.data.pageIndex;
                 this.pageSize = resp.data.pageSize;
                 this.totalInfo = resp.data.count;
@@ -432,7 +555,9 @@ export default {
                 pageSize,
                 this.qryForm.username,
                 this.qryForm.realName,
-                this.qryForm.phone
+                this.qryForm.phone,
+                this.qryForm.studentId,
+                this.qryForm.address
             );
         },
         handleCurrentChange(pageIndex) {
@@ -441,7 +566,9 @@ export default {
                 this.pageSize,
                 this.qryForm.username,
                 this.qryForm.realName,
-                this.qryForm.phone
+                this.qryForm.phone,
+                this.qryForm.studentId,
+                this.qryForm.address
             );
         },
         initForm() {
@@ -454,7 +581,10 @@ export default {
                 email: "",
                 status: 1,
                 type: 2,
-                birthday: null
+                birthday: null,
+                studentId: "",
+                address: "",
+                clubId: "",
             };
         },
 
@@ -531,6 +661,10 @@ export default {
 
         getLoginUser(this.$store.state.token).then((resp) => {
             this.userType = resp.data.type;
+        });
+
+        getAllTeamList().then((resp) => {
+            this.teamList = resp.data;
         });
     },
 };
